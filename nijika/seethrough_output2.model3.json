@@ -1,0 +1,11 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "seethrough_output2.moc3",
+		"Textures": [
+			"seethrough_output2.1024/texture_00.png"
+		],
+		"Physics": "seethrough_output2.physics3.json",
+		"DisplayInfo": "seethrough_output2.cdi3.json"
+	}
+}

@@ -1,0 +1,840 @@
+{
+	"camera" : 
+	{
+		"center" : "0.00000 0.00000 -1.00000",
+		"eye" : "0.00000 0.00000 0.00000",
+		"up" : "0.00000 1.00000 0.00000"
+	},
+	"general" : 
+	{
+		"ambientcolor" : "0.30000 0.30000 0.30000",
+		"bloom" : false,
+		"bloomhdrfeather" : 0.1,
+		"bloomhdriterations" : 8,
+		"bloomhdrscatter" : 1.619,
+		"bloomhdrstrength" : 2.0,
+		"bloomhdrthreshold" : 1.0,
+		"bloomstrength" : 2.0,
+		"bloomthreshold" : 0.64999998,
+		"bloomtint" : "1.00000 1.00000 1.00000",
+		"camerafade" : true,
+		"cameraparallax" : true,
+		"cameraparallaxamount" : 0.1,
+		"cameraparallaxdelay" : 2.0,
+		"cameraparallaxmouseinfluence" : 0.25,
+		"camerapreview" : true,
+		"camerashake" : false,
+		"camerashakeamplitude" : 1.0,
+		"camerashakeroughness" : 1.0,
+		"camerashakespeed" : 0.69999999,
+		"clearcolor" : "0.70000 0.70000 0.70000",
+		"clearenabled" : true,
+		"farz" : 10000.0,
+		"fov" : 50.0,
+		"gravitydirection" : "0.00000 -1.00000 0.00000",
+		"gravitystrength" : 1.0,
+		"hdr" : false,
+		"nearz" : 0.0099999998,
+		"orthogonalprojection" : 
+		{
+			"height" : 2160,
+			"width" : 3840
+		},
+		"perspectiveoverridefov" : 95.0,
+		"skylightcolor" : "0.30000 0.30000 0.30000",
+		"winddirection" : "0.70700 0.70700 0.00000",
+		"windenabled" : false,
+		"windstrength" : 1.0,
+		"zoom" : 1.05
+	},
+	"objects" : 
+	[
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/depthparallax/effect.json",
+					"id" : 163,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"center" : 
+								{
+									"user" : "centerparallax",
+									"value" : 0.34999999
+								},
+								"scale" : "2 1.51",
+								"sens" : 0.5
+							},
+							"id" : 164,
+							"textures" : [ null, "wyxina-tresse-znNxVNMkVaY-unsplash (1)_depth" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/foliagesway/effect.json",
+					"id" : 166,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"phase" : 0.28999999,
+								"power" : 1,
+								"ratio" : 0.30000001,
+								"scale" : 0.02,
+								"scrolldirection" : 0,
+								"speeduv" : 2.0999999,
+								"strength" : 0.56
+							},
+							"id" : 171
+						}
+					],
+					"visible" : 
+					{
+						"user" : "swayingfoliage",
+						"value" : true
+					}
+				}
+			],
+			"id" : 178,
+			"image" : "models/wyxina-tresse-znNxVNMkVaY-unsplash (1).json",
+			"locktransforms" : true,
+			"name" : "wyxina-tresse-znNxVNMkVaY-unsplash (1)",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"size" : "3840.00000 2160.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 3.12600",
+			"disablepropagation" : false,
+			"id" : 120,
+			"instanceoverride" : 
+			{
+				"count" : 1.27,
+				"id" : 121,
+				"rate" : 0.30000001,
+				"size" : 0.69999999
+			},
+			"name" : "Rain_Splash(Parent)",
+			"origin" : "791.84033 1144.42773 0.00000",
+			"parallaxDepth" : "-1.00000 -1.00000",
+			"particle" : "particles/workshop/2128373241/Rain_Splash_copy2.json",
+			"scale" : "1.00000 1.55940 1.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "rain",
+				"value" : true
+			}
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.75464",
+			"disablepropagation" : false,
+			"id" : 2331,
+			"instanceoverride" : 
+			{
+				"count" : 1.27,
+				"id" : 41,
+				"rate" : 0.30000001,
+				"size" : 0.69999999
+			},
+			"name" : "Rain_Splash(Parent)",
+			"origin" : "-2350.33203 -23.50336 0.00000",
+			"parallaxDepth" : "-1.00000 -1.00000",
+			"parent" : 120,
+			"particle" : "particles/workshop/2128373241/Rain_Splash_copy2.json",
+			"scale" : "0.77340 1.17548 1.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "rain",
+				"value" : true
+			}
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.33203",
+			"disablepropagation" : false,
+			"id" : 4437,
+			"instanceoverride" : 
+			{
+				"count" : 1.27,
+				"id" : 44,
+				"rate" : 0.30000001,
+				"size" : 0.69999999
+			},
+			"name" : "Rain_Splash(Parent)",
+			"origin" : "-1089.35339 -10.89355 0.00000",
+			"parallaxDepth" : "-1.00000 -1.00000",
+			"parent" : 120,
+			"particle" : "particles/workshop/2128373241/Rain_Splash_copy2.json",
+			"scale" : "0.93165 1.03283 1.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "rain",
+				"value" : true
+			}
+		},
+		{
+			"disablepropagation" : false,
+			"id" : 129,
+			"instanceoverride" : 
+			{
+				"id" : 130,
+				"size" : 5.0
+			},
+			"name" : "Rain_Splash_Drops(Child)",
+			"origin" : "2610.76611 1023.38104 0.00000",
+			"particle" : "particles/workshop/2128373241/Rain_Splash_Drops_copy1.json",
+			"solid" : true,
+			"visible" : false
+		},
+		{
+			"angles" : "-1.04720 0.00000 0.00000",
+			"disablepropagation" : false,
+			"id" : 135,
+			"instanceoverride" : 
+			{
+				"id" : 89,
+				"size" : 0.77999997
+			},
+			"name" : "Rain_Splash_2(Parent)",
+			"origin" : "1930.54248 1092.04529 0.00000",
+			"parallaxDepth" : "-1.00000 -1.00000",
+			"particle" : "particles/workshop/2128373241/splash_refract_copy1.json",
+			"scale" : "2.38606 12.29396 2.38606",
+			"solid" : true,
+			"visible" : false
+		},
+		{
+			"disablepropagation" : false,
+			"id" : 141,
+			"instanceoverride" : 
+			{
+				"id" : 0,
+				"rate" : 0.2
+			},
+			"name" : "Rain_Splash_Drops_2(Child)",
+			"origin" : "1922.66699 955.31598 0.00000",
+			"particle" : "particles/workshop/2128373241/Rain_Splash_Drops_copy2.json",
+			"solid" : true,
+			"visible" : false
+		},
+		{
+			"angles" : "3.14159 0.00000 0.00000",
+			"disablepropagation" : false,
+			"id" : 2280,
+			"instanceoverride" : 
+			{
+				"alpha" : 0.07,
+				"count" : 0.28,
+				"id" : 2281,
+				"rate" : 1.05,
+				"size" : 2.0
+			},
+			"name" : "Star field",
+			"origin" : "1880.87573 1138.68640 0.00000",
+			"parallaxDepth" : "-1.00000 -1.00000",
+			"particle" : "particles/presets/starfield.json",
+			"scale" : "5.47275 5.47275 5.47275",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "rain",
+				"value" : true
+			}
+		},
+		{
+			"angles" : "3.14159 0.00000 0.00000",
+			"disablepropagation" : false,
+			"id" : 2287,
+			"instanceoverride" : 
+			{
+				"alpha" : 0.69999999,
+				"count" : 0.28,
+				"id" : 103,
+				"rate" : 0.56999999,
+				"size" : 0.41
+			},
+			"name" : "Star field",
+			"origin" : "68.69580 1138.68640 0.00000",
+			"parallaxDepth" : "-1.00000 -1.00000",
+			"particle" : "particles/presets/starfield.json",
+			"scale" : "5.47275 5.47275 5.47275",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "rain",
+				"value" : true
+			}
+		},
+		{
+			"angles" : "3.14159 0.00000 0.00000",
+			"disablepropagation" : false,
+			"id" : 6700,
+			"instanceoverride" : 
+			{
+				"alpha" : 0.69999999,
+				"count" : 0.28,
+				"id" : 6702,
+				"rate" : 0.56999999,
+				"size" : 0.41
+			},
+			"name" : "Star field",
+			"origin" : "-1070.11646 1138.68640 0.00000",
+			"parallaxDepth" : "-1.00000 -1.00000",
+			"particle" : "particles/presets/starfield.json",
+			"scale" : "5.47275 5.47275 5.47275",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "rain",
+				"value" : true
+			}
+		},
+		{
+			"angles" : "3.14159 0.00000 0.00000",
+			"disablepropagation" : false,
+			"id" : 2293,
+			"instanceoverride" : 
+			{
+				"alpha" : 0.69999999,
+				"count" : 0.28,
+				"id" : 119,
+				"rate" : 0.56999999,
+				"size" : 0.41
+			},
+			"name" : "Star field",
+			"origin" : "3836.32617 1138.68640 0.00000",
+			"parallaxDepth" : "-1.00000 -1.00000",
+			"particle" : "particles/presets/starfield.json",
+			"scale" : "5.47275 5.47275 5.47275",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "rain",
+				"value" : true
+			}
+		},
+		{
+			"angles" : "3.14159 0.00000 0.00000",
+			"disablepropagation" : false,
+			"id" : 4926,
+			"instanceoverride" : 
+			{
+				"alpha" : 0.69999999,
+				"count" : 0.28,
+				"id" : 4928,
+				"rate" : 0.56999999,
+				"size" : 0.41
+			},
+			"name" : "Star field",
+			"origin" : "5888.27881 1138.68640 0.00000",
+			"parallaxDepth" : "-1.00000 -1.00000",
+			"particle" : "particles/presets/starfield.json",
+			"scale" : "5.47275 5.47275 5.47275",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "rain",
+				"value" : true
+			}
+		},
+		{
+			"disablepropagation" : false,
+			"id" : 340,
+			"instanceoverride" : 
+			{
+				"id" : 85
+			},
+			"name" : "Gouttes de pluie 4k",
+			"origin" : "1905.82190 1011.02051 0.00000",
+			"parallaxDepth" : "0.00000 0.00000",
+			"particle" : "particles/presets/rain_screen_4k.json",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "rain",
+				"value" : true
+			}
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/blur/effect.json",
+					"id" : 66,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"id" : 227
+						},
+						{
+							"constantshadervalues" : 
+							{
+								"scale" : "0.37 0.37"
+							},
+							"id" : 228
+						},
+						{
+							"combos" : 
+							{
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : "0.37 0.37"
+							},
+							"id" : 226
+						},
+						{
+							"constantshadervalues" : 
+							{
+								"compositecolor" : "1 1 1"
+							},
+							"id" : 230,
+							"textures" : [ null, "gradient/blend_gradient", null ]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "blur",
+						"value" : true
+					}
+				}
+			],
+			"id" : 63,
+			"image" : "models/util/fullscreenlayer.json",
+			"name" : "Couche de post-traitement",
+			"parallaxDepth" : "0.00000 0.00000"
+		},
+		{
+			"alignment" : "left",
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/3082978660/enhanced_simple_audio_bars/effect.json",
+					"id" : 2370,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"SHAPE" : 7
+							},
+							"constantshadervalues" : 
+							{
+								"Anti-alias blurring " : "0.1 0",
+								"Bar Color" : "1 1 1",
+								"Bar Count" : 25,
+								"Bar Spacing" : 0.5,
+								"Lower/Upper Bar Bounds" : "0 0.6",
+								"Minimum Height (Will be multiplied by the bar width)" : 0,
+								"Minimum Height (Will be multiplied by the bar width) " : 1.0,
+								"Radius" : 1.0,
+								"Volume Factor" : 1.0,
+								"ui_editor_properties_opacity" : 1
+							},
+							"id" : 2371
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 2368,
+			"image" : "models/util/solidlayer.json",
+			"name" : "SoundBar",
+			"origin" : "1930.45435 1080.00000 0.00000",
+			"parallaxDepth" : "0.00000 0.00000",
+			"size" : "400.00000 150.00000",
+			"visible" : 
+			{
+				"user" : "soundbar",
+				"value" : true
+			}
+		},
+		{
+			"disablepropagation" : false,
+			"id" : 465,
+			"name" : "DAY (EN)",
+			"origin" : "1913.72742 1080.00000 0.00000",
+			"parallaxDepth" : "0.00000 0.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "daydatetime",
+				"value" : true
+			}
+		},
+		{
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 1.4,
+			"castshadow" : false,
+			"clampuvs" : true,
+			"depthtest" : "enabled",
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/3424038533/blurprecise/effect.json",
+					"id" : 2420,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"scale" : "0.43 0.43"
+							},
+							"id" : 0
+						},
+						{
+							"combos" : 
+							{
+								"ENABLEMASK" : 1,
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : "0.43 0.43"
+							},
+							"id" : 2422
+						}
+					],
+					"visible" : true
+				}
+			],
+			"font" : "fonts/Warpen.ttf",
+			"horizontalalign" : "right",
+			"id" : 2419,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Day",
+			"opaquebackground" : false,
+			"origin" : "0.00000 56.43738 0.00000",
+			"padding" : 32,
+			"parallaxDepth" : "0.00000 0.00000",
+			"parent" : 465,
+			"pointsize" : 17.0,
+			"scale" : "1.14488 1.13179 0.95818",
+			"size" : "247.00000 131.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '3424038533';\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n\n\nexport var scriptProperties = createScriptProperties()\n\t.addCombo({\n\t\tname: 'monthFormat',\n\t\tlabel: 'Month Format',\n\t\toptions: [{\n\t\t\tlabel: 'Numeric',\n\t\t\tvalue: '1'\n\t\t}, {\n\t\t\tlabel: 'Abbreviated',\n\t\t\tvalue: '2'\n\t\t},{\n\t\t\tlabel: 'Full',\n\t\t\tvalue: '3'\n\t\t}]\n\t})\n\t.addCombo({\n\t\tname: 'dayFormat',\n\t\tlabel: 'Day Format',\n\t\toptions: [{\n\t\t\tlabel: 'Abbreviated',\n\t\t\tvalue: '1'\n\t\t}, {\n\t\t\tlabel: 'Full',\n\t\t\tvalue: '2'\n\t\t}]\n\t})\n\t.addCheckbox({\n\t\tname: 'showDay',\n\t\tlabel: 'Show Day',\n\t\tvalue: true\n\t})\n   .addCheckbox({\n\t\tname: 'alignVertical',\n\t\tlabel: 'Align Day Vertically',\n\t\tvalue: false\n\t})\n  .addCheckbox({\n\t\tname: 'useDelimiter',\n\t\tlabel: 'Use Delimiter',\n\t\tvalue: false\n\t})\n\t.addText({\n\t\tname: 'addDelimiter',\n\t\tlabel: 'Delimiter',\n\t\tvalue: '/'\n\t})\n\t.finish();\n\n\nlet months;\nlet day;\nvar delimiterValue;\nvar newLine;\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value){\n  if (scriptProperties.useDelimiter == true){\n  delimiterValue = scriptProperties.addDelimiter\n}\n  if (scriptProperties.useDelimiter == false){\n   delimiterValue = [\n  ' '\n]\n}\nif (scriptProperties.alignVertical == true){\n   newLine = [\n  '\\n'\n]\n}\nif (scriptProperties.alignVertical == false){\n   newLine = [\n  ''\n]\n}\n  if (scriptProperties.monthFormat == 1){\n  months = [\n  '1',\n  '2',\n  '3',\n  '4',\n  '5',\n  '6',\n  '7',\n  '8',\n  '9',\n  '10',\n  '11',\n  '12'\n]\n}\n if (scriptProperties.monthFormat == 2){\n months = [\n  'JAN',\n  'FEB',\n  'MAR',\n  'APR',\n  'MAY',\n  'JUN',\n  'JUL',\n  'AUG',\n  'SEP',\n  'OCT',\n  'NOV',\n  'DEC'\n]\n}\nif (scriptProperties.monthFormat == 3){\n months = [\n  'January',\n  'February',\n  'March',\n  'April',\n  'May',\n  'June',\n  'July',\n  'August',\n  'September',\n  'October',\n  'November',\n  'December'\n]\n}\nif (scriptProperties.dayFormat == 1){\n  day = [\n  'S U N',\n  'M O N',\n  'T U E',\n  'W E D',\n  'T H U',\n  'F R I',\n  'S A T'\n]\n}\nif (scriptProperties.dayFormat == 2){\n day = [\n  'SUNDAY',\n  'MONDAY',\n  'TUESDAY',\n  'WEDNESDAY',\n  'THURSDAY',\n  'FRIDAY',\n  'SATURDAY'\n]\n}\n\tlet date = new Date();{\n    if (scriptProperties.showDay == true ){\n    return day[date.getDay()]      }\n    if (scriptProperties.showDay == false ){\n\treturn   date.getDate() + delimiterValue + months[date.getMonth()] + delimiterValue + date.getFullYear();\n}\n}\n}\n",
+				"scriptproperties" : 
+				{
+					"addDelimiter" : "/",
+					"alignVertical" : false,
+					"dayFormat" : "2",
+					"monthFormat" : "1",
+					"showDay" : true,
+					"useDelimiter" : true
+				},
+				"value" : "DAY"
+			},
+			"verticalalign" : "center",
+			"visible" : 
+			{
+				"user" : "day",
+				"value" : true
+			}
+		},
+		{
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 1.98,
+			"castshadow" : false,
+			"clampuvs" : true,
+			"depthtest" : "enabled",
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/3424038533/blurprecise/effect.json",
+					"id" : 2428,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"scale" : "1.33 1.33"
+							},
+							"id" : 2429
+						},
+						{
+							"combos" : 
+							{
+								"ENABLEMASK" : 1,
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : "1.33 1.33"
+							},
+							"id" : 2430
+						}
+					],
+					"visible" : true
+				}
+			],
+			"font" : "fonts/Warpen.ttf",
+			"horizontalalign" : "right",
+			"id" : 2425,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Date",
+			"opaquebackground" : false,
+			"origin" : "0.00000 -10.45459 0.00000",
+			"padding" : 32,
+			"parent" : 465,
+			"pointsize" : 29.0,
+			"scale" : "0.31731 0.30580 0.44841",
+			"size" : "602.00000 179.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '3424038533';\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n\n\nexport var scriptProperties = createScriptProperties()\n\t.addCombo({\n\t\tname: 'monthFormat',\n\t\tlabel: 'Month Format',\n\t\toptions: [{\n\t\t\tlabel: 'Numeric',\n\t\t\tvalue: '1'\n\t\t}, {\n\t\t\tlabel: 'Abbreviated',\n\t\t\tvalue: '2'\n\t\t},{\n\t\t\tlabel: 'Full',\n\t\t\tvalue: '3'\n\t\t}]\n\t})\n\t.addCombo({\n\t\tname: 'dayFormat',\n\t\tlabel: 'Day Format',\n\t\toptions: [{\n\t\t\tlabel: 'Abbreviated',\n\t\t\tvalue: '1'\n\t\t}, {\n\t\t\tlabel: 'Full',\n\t\t\tvalue: '2'\n\t\t}]\n\t})\n\t.addCheckbox({\n\t\tname: 'showDay',\n\t\tlabel: 'Show Day',\n\t\tvalue: false\n\t})\n   .addCheckbox({\n\t\tname: 'alignVertical',\n\t\tlabel: 'Align Day Vertically',\n\t\tvalue: false\n\t})\n  .addCheckbox({\n\t\tname: 'useDelimiter',\n\t\tlabel: 'Use Delimiter',\n\t\tvalue: false\n\t})\n\t.addText({\n\t\tname: 'addDelimiter',\n\t\tlabel: 'Delimiter',\n\t\tvalue: '/'\n\t})\n\t.finish();\n\n\nlet months;\nlet day;\nvar delimiterValue;\nvar newLine;\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value){\n  if (scriptProperties.useDelimiter == true){\n  delimiterValue = scriptProperties.addDelimiter\n}\n  if (scriptProperties.useDelimiter == false){\n   delimiterValue = [\n  ' '\n]\n}\nif (scriptProperties.alignVertical == true){\n   newLine = [\n  '\\n'\n]\n}\nif (scriptProperties.alignVertical == false){\n   newLine = [\n  ''\n]\n}\n  if (scriptProperties.monthFormat == 1){\n  months = [\n  '1',\n  '2',\n  '3',\n  '4',\n  '5',\n  '6',\n  '7',\n  '8',\n  '9',\n  '10',\n  '11',\n  '12'\n]\n}\n if (scriptProperties.monthFormat == 2){\n months = [\n  ' JAN ',\n  ' FEB ',\n  ' MAR ',\n  ' APR ',\n  ' MAY ',\n  ' JUN ',\n  ' JUL ',\n  ' AUG ',\n  ' SEP ',\n  ' OCT ',\n  ' NOV ',\n  ' DEC '\n]\n}\nif (scriptProperties.monthFormat == 3){\n months = [\n  'January',\n  'February',\n  'March',\n  'April',\n  'May',\n  'June',\n  'July',\n  'August',\n  'September',\n  'October',\n  'November',\n  'December'\n]\n}\nif (scriptProperties.dayFormat == 1){\n  day = [\n  'Sun',\n  'Mon',\n  'Tue',\n  'Wed',\n  'Thu',\n  'Fri',\n  '\\nSat'\n]\n}\nif (scriptProperties.dayFormat == 2){\n day = [\n  'Sunday',\n  'Monday',\n  'Tuesday',\n  'Wednesday',\n  'Thursday',\n  'Friday',\n  '\\nSaturday'\n]\n}\n\tlet date = new Date();{\n    if (scriptProperties.showDay == true ){\n    return day[date.getDay()] + newLine + ' ' + date.getDate() + delimiterValue + months[date.getMonth()] + delimiterValue + date.getFullYear();\n    }\n    if (scriptProperties.showDay == false ){\n\treturn   date.getDate() + delimiterValue + months[date.getMonth()] + delimiterValue + date.getFullYear();\n}\n}\n}\n",
+				"scriptproperties" : 
+				{
+					"addDelimiter" : "",
+					"alignVertical" : false,
+					"dayFormat" : "2",
+					"monthFormat" : "2",
+					"showDay" : false,
+					"useDelimiter" : true
+				},
+				"value" : "<Date>"
+			},
+			"verticalalign" : "center",
+			"visible" : 
+			{
+				"user" : "date",
+				"value" : true
+			}
+		},
+		{
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 2.3900001,
+			"castshadow" : false,
+			"clampuvs" : true,
+			"depthtest" : "enabled",
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/3424038533/blurprecise/effect.json",
+					"id" : 2434,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"scale" : "1.28 1.28"
+							},
+							"id" : 2435
+						},
+						{
+							"combos" : 
+							{
+								"ENABLEMASK" : 1,
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : "1.28 1.28"
+							},
+							"id" : 2436
+						}
+					],
+					"visible" : true
+				}
+			],
+			"font" : "fonts/Warpen.ttf",
+			"horizontalalign" : "right",
+			"id" : 2433,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Clock",
+			"opaquebackground" : false,
+			"origin" : "0.00000 -54.39587 0.00000",
+			"padding" : 32,
+			"parent" : 465,
+			"pointsize" : 28.0,
+			"scale" : "0.28038 0.28038 0.28038",
+			"size" : "476.00000 175.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '3424038533';\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties()\n\t// Whether you want a 24h or 12h style format\n\t.addCheckbox({\n\t\tname: 'use24hFormat',\n\t\tlabel: 'ui_editor_properties_use_24h_format',\n\t\tvalue: true\n\t})\n\t// Whether you want to see the seconds or not\n\t.addCheckbox({\n\t\tname: 'showSeconds',\n\t\tlabel: 'ui_editor_properties_show_seconds',\n\t\tvalue: false\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: 'ui_editor_properties_delimiter',\n\t\tvalue: ':'\n\t})\n\t.finish();\n\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tvar hours = time.getHours();\n\tif (!scriptProperties.use24hFormat) {\n\t\thours %= 12;\n\t\tif (hours == 0) {\n\t\t\thours = 12;\n\t\t}\n\t}\n\thours = (\"00\" + hours).slice(-2);\n\tlet minutes = (\"00\" + time.getMinutes()).slice(-2);\n\tvalue = \"\" + hours + scriptProperties.delimiter + minutes+\"\";\n\tif (scriptProperties.showSeconds) {\n\t\tlet seconds = (\"00\" + time.getSeconds()).slice(-2);\n\t\tvalue += scriptProperties.delimiter + seconds;\n\t}\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"delimiter" : ":",
+					"showSeconds" : false,
+					"use24hFormat" : false
+				},
+				"value" : "12:34"
+			},
+			"verticalalign" : "center",
+			"visible" : 
+			{
+				"user" : 
+				{
+					"condition" : "1",
+					"name" : "clock"
+				},
+				"value" : false
+			}
+		},
+		{
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 2.3900001,
+			"castshadow" : false,
+			"clampuvs" : true,
+			"depthtest" : "enabled",
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/3424038533/blurprecise/effect.json",
+					"id" : 2572,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"scale" : "1.28 1.28"
+							},
+							"id" : 2573
+						},
+						{
+							"combos" : 
+							{
+								"ENABLEMASK" : 1,
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : "1.28 1.28"
+							},
+							"id" : 2574
+						}
+					],
+					"visible" : true
+				}
+			],
+			"font" : "fonts/Warpen.ttf",
+			"horizontalalign" : "right",
+			"id" : 2571,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Clock",
+			"opaquebackground" : false,
+			"origin" : "0.00000 -54.39587 0.00000",
+			"padding" : 32,
+			"parent" : 465,
+			"pointsize" : 28.0,
+			"scale" : "0.28038 0.28038 0.28038",
+			"size" : "476.00000 175.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '3424038533';\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties()\n\t// Whether you want a 24h or 12h style format\n\t.addCheckbox({\n\t\tname: 'use24hFormat',\n\t\tlabel: 'ui_editor_properties_use_24h_format',\n\t\tvalue: true\n\t})\n\t// Whether you want to see the seconds or not\n\t.addCheckbox({\n\t\tname: 'showSeconds',\n\t\tlabel: 'ui_editor_properties_show_seconds',\n\t\tvalue: false\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: 'ui_editor_properties_delimiter',\n\t\tvalue: ':'\n\t})\n\t.finish();\n\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tvar hours = time.getHours();\n\tif (!scriptProperties.use24hFormat) {\n\t\thours %= 12;\n\t\tif (hours == 0) {\n\t\t\thours = 12;\n\t\t}\n\t}\n\thours = (\"00\" + hours).slice(-2);\n\tlet minutes = (\"00\" + time.getMinutes()).slice(-2);\n\tvalue = \"\" + hours + scriptProperties.delimiter + minutes+\"\";\n\tif (scriptProperties.showSeconds) {\n\t\tlet seconds = (\"00\" + time.getSeconds()).slice(-2);\n\t\tvalue += scriptProperties.delimiter + seconds;\n\t}\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"delimiter" : ":",
+					"showSeconds" : false,
+					"use24hFormat" : true
+				},
+				"value" : "12:34"
+			},
+			"verticalalign" : "center",
+			"visible" : 
+			{
+				"user" : 
+				{
+					"condition" : "0",
+					"name" : "clock"
+				},
+				"value" : true
+			}
+		},
+		{
+			"disablepropagation" : false,
+			"id" : 248,
+			"maxtime" : 5.0,
+			"mintime" : 1.0,
+			"muteineditor" : true,
+			"name" : "calming-rain-257596.mp3",
+			"playbackmode" : "loop",
+			"solid" : true,
+			"sound" : [ "sounds/calming-rain-257596.mp3" ],
+			"startsilent" : false,
+			"volume" : 
+			{
+				"user" : "rainsound",
+				"value" : 0.40000001
+			}
+		},
+		{
+			"disablepropagation" : false,
+			"id" : 137,
+			"maxtime" : 5.0,
+			"mintime" : 1.0,
+			"muteineditor" : true,
+			"name" : "Juice WRLD - Hide  Instrumental (Slowed And Reverb).mp3",
+			"playbackmode" : "loop",
+			"solid" : true,
+			"sound" : [ "sounds/Juice WRLD - Hide  Instrumental (Slowed And Reverb).mp3" ],
+			"startsilent" : false,
+			"volume" : 
+			{
+				"user" : "music",
+				"value" : 0.60000002
+			}
+		}
+	],
+	"version" : 1
+}

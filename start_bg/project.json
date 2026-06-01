@@ -1,0 +1,358 @@
+{
+	"contentrating" : "Everyone",
+	"description" : "𝘼𝙣𝙞𝙢𝙖𝙩𝙚𝙙 𝙗𝙮 [u][url=https://steamcommunity.com/profiles/76561198451543154/]𝙉𝙤𝙧𝙩𝙝𝙒𝙖𝙮[/url][/u]\n\n𝘿𝙤𝙣'𝙩 𝙝𝙚𝙨𝙞𝙩𝙖𝙩𝙚 𝙩𝙤 𝙨𝙪𝙗𝙨𝙘𝙧𝙞𝙗𝙚 𝙩𝙤 𝙢𝙮 [url=https://steamcommunity.com/profiles/76561198451543154/myworkshopfiles/]Workshop[/url] 𝙛𝙤𝙧 𝙢𝙤𝙧𝙚 𝙬𝙖𝙡𝙡𝙥𝙖𝙥𝙚𝙧𝙨 𝙞𝙣 𝙩𝙝𝙞𝙨 𝙨𝙩𝙮𝙡𝙚. \n\n𝙈𝙪𝙨𝙞𝙘 : [url=https://www.youtube.com/watch?v=9ih8jvjiXZo]Kendrick Lamar - Money Trees (Instrumental)[/url]\n\n𝘼𝙧𝙩 𝙗𝙮 [url=https://unsplash.com/fr/photos/un-bouquet-de-fleurs-qui-sont-dans-lobscurite-btfVOiZXJyY]Yeon Li[/url]\n\n𝘿𝘼𝙔 𝘿𝘼𝙏𝙀 𝙏𝙄𝙈𝙀 : [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3424038533]Garet. (DAY DATE TIME)[/url]\n\n𝙈𝙚𝙙𝙞𝙖 𝙄𝙣𝙛𝙤 : [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3200298808]𝙈𝙪𝙨𝙞𝙘 𝙄𝙣𝙛𝙤 𝘽𝙮 𝙣𝙤𝙧𝙩𝙝𝙬𝙖𝙮. [/url]\n\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀𝘼𝙙𝙙 𝙢𝙚 𝙞𝙛 𝙮𝙤𝙪 𝙬𝙖𝙣𝙩 𝙖 𝙥𝙚𝙧𝙨𝙤𝙣𝙖𝙡𝙞𝙯𝙚𝙙 𝙬𝙖𝙡𝙡𝙥𝙖𝙥𝙚𝙧.\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀↓⠀𝙄𝙛 𝙮𝙤𝙪 𝙬𝙖𝙣𝙩 𝙩𝙤 𝙨𝙪𝙥𝙥𝙤𝙧𝙩 𝙢𝙚, 𝙮𝙤𝙪 𝙘𝙖𝙣 𝙙𝙤𝙣𝙖𝙩𝙚 𝙝𝙚𝙧𝙚. ↓\n\n[url=https://ko-fi.com/northway][img]http://i.imgur.com/nmxLCKk.gif[/img][/url] [url=paypal.me/northwayWE][img]http://i.imgur.com/DWa9K3h.gif[/img][/url]",
+	"file" : "scene.json",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"_1" : 
+			{
+				"index" : 18,
+				"order" : 118,
+				"text" : "ShortCut 1",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"_10" : 
+			{
+				"index" : 36,
+				"order" : 136,
+				"text" : "ShortCut 10",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"_2" : 
+			{
+				"index" : 20,
+				"order" : 120,
+				"text" : "ShortCut 2",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"_3" : 
+			{
+				"index" : 22,
+				"order" : 122,
+				"text" : "ShortCut 3",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"_4" : 
+			{
+				"index" : 24,
+				"order" : 124,
+				"text" : "ShortCut 4",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"_5" : 
+			{
+				"index" : 26,
+				"order" : 126,
+				"text" : "ShortCut 5",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"_6" : 
+			{
+				"index" : 28,
+				"order" : 128,
+				"text" : "ShortCut 6",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"_7" : 
+			{
+				"index" : 30,
+				"order" : 130,
+				"text" : "ShortCut 7",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"_8" : 
+			{
+				"index" : 32,
+				"order" : 132,
+				"text" : "ShortCut 8",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"_9" : 
+			{
+				"index" : 34,
+				"order" : 134,
+				"text" : "ShortCut 9",
+				"type" : "usershortcut",
+				"value" : ""
+			},
+			"blur" : 
+			{
+				"index" : 3,
+				"order" : 103,
+				"text" : "Blur",
+				"type" : "bool",
+				"value" : true
+			},
+			"clock" : 
+			{
+				"index" : 13,
+				"options" : 
+				[
+					{
+						"label" : "24H",
+						"value" : "0"
+					},
+					{
+						"label" : "12H",
+						"value" : "1"
+					},
+					{
+						"label" : "None",
+						"value" : "2"
+					}
+				],
+				"order" : 113,
+				"text" : "Clock",
+				"type" : "combo",
+				"value" : "0"
+			},
+			"date" : 
+			{
+				"index" : 12,
+				"order" : 112,
+				"text" : "Date",
+				"type" : "bool",
+				"value" : true
+			},
+			"day" : 
+			{
+				"index" : 11,
+				"order" : 111,
+				"text" : "Day",
+				"type" : "bool",
+				"value" : true
+			},
+			"daydatetime" : 
+			{
+				"index" : 10,
+				"order" : 110,
+				"text" : "Day-Date-Time",
+				"type" : "bool",
+				"value" : true
+			},
+			"daydatetime1" : 
+			{
+				"index" : 9,
+				"order" : 109,
+				"text" : "DAY DATE TIME",
+				"type" : "group",
+				"value" : ""
+			},
+			"enable1" : 
+			{
+				"index" : 17,
+				"order" : 117,
+				"text" : "Enable #1",
+				"type" : "bool",
+				"value" : true
+			},
+			"enable10" : 
+			{
+				"index" : 35,
+				"order" : 135,
+				"text" : "Enable #10",
+				"type" : "bool",
+				"value" : true
+			},
+			"enable2" : 
+			{
+				"index" : 19,
+				"order" : 119,
+				"text" : "Enable #2",
+				"type" : "bool",
+				"value" : true
+			},
+			"enable3" : 
+			{
+				"index" : 21,
+				"order" : 121,
+				"text" : "Enable #3",
+				"type" : "bool",
+				"value" : true
+			},
+			"enable4" : 
+			{
+				"index" : 23,
+				"order" : 123,
+				"text" : "Enable #4",
+				"type" : "bool",
+				"value" : true
+			},
+			"enable5" : 
+			{
+				"index" : 25,
+				"order" : 125,
+				"text" : "Enable #5",
+				"type" : "bool",
+				"value" : true
+			},
+			"enable6" : 
+			{
+				"index" : 27,
+				"order" : 127,
+				"text" : "Enable #6",
+				"type" : "bool",
+				"value" : true
+			},
+			"enable7" : 
+			{
+				"index" : 29,
+				"order" : 129,
+				"text" : "Enable #7",
+				"type" : "bool",
+				"value" : true
+			},
+			"enable8" : 
+			{
+				"index" : 31,
+				"order" : 131,
+				"text" : "Enable #8",
+				"type" : "bool",
+				"value" : true
+			},
+			"enable9" : 
+			{
+				"index" : 33,
+				"order" : 133,
+				"text" : "Enable #9",
+				"type" : "bool",
+				"value" : true
+			},
+			"mediainfo" : 
+			{
+				"index" : 1,
+				"order" : 101,
+				"text" : "Media Info",
+				"type" : "bool",
+				"value" : false
+			},
+			"mediainfomovable" : 
+			{
+				"index" : 2,
+				"order" : 102,
+				"text" : "Media info Movable",
+				"type" : "bool",
+				"value" : false
+			},
+			"music" : 
+			{
+				"fraction" : true,
+				"index" : 7,
+				"max" : 1,
+				"min" : 0,
+				"order" : 107,
+				"precision" : 2,
+				"step" : 0.1,
+				"text" : "Music",
+				"type" : "slider",
+				"value" : 0.7
+			},
+			"newproperty" : 
+			{
+				"fraction" : true,
+				"index" : 16,
+				"max" : 0.96,
+				"min" : 0.08,
+				"order" : 116,
+				"precision" : 2,
+				"step" : 0.1,
+				"text" : "Center",
+				"type" : "slider",
+				"value" : 0.96
+			},
+			"parallaxcenter" : 
+			{
+				"fraction" : true,
+				"index" : 6,
+				"max" : 1,
+				"min" : 0,
+				"order" : 106,
+				"precision" : 2,
+				"step" : 0.1,
+				"text" : "Parallax Center",
+				"type" : "slider",
+				"value" : 0.35
+			},
+			"pub" : 
+			{
+				"index" : 0,
+				"order" : 100,
+				"text" : "<p><center><a><img src='https://images.steamusercontent.com/ugc/13052583757652582/12E91EA00F403FE9A44B356174F2829D899708B9/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false'></a></p></center></b><p><center><b>⮛ ABOUT ME ⮛</b></p><img src='https://images.steamusercontent.com/ugc/13052583757652582/12E91EA00F403FE9A44B356174F2829D899708B9/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false'></a></p></center></b><p><center><b>My PayPal is here if you feel like making a donation.</b></p><center><p><a href='https://www.paypal.com/paypalme/northwayWE'><img src='https://images.steamusercontent.com/ugc/13052583757782410/D892483C32648A33D5A91E675992A669E8316754/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false'></a></p></center></b><p><center><b>Subscribe to my workshop for more wallpapers like this one</b></p><center><p><a href='https://steamcommunity.com/profiles/76561198451543154/myworkshopfiles/'><img src='https://images.steamusercontent.com/ugc/13052583757838442/3FEB173B29ED03854BCEB4D84ACDACEC1022C8A2/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false'></a></p></center></b><p><center><b>If you liked this wallpaper, Check my wallpaper collection</b></p><center><p><a href='https://steamcommunity.com/sharedfiles/filedetails/?id=2943507780'><img src='https://images.steamusercontent.com/ugc/13047310504348635/58ABEF1D8CE7365832259B84D56586B3A8BEB850/?imw=160&imh=160&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true' width='128' height='128'></a></p></center></b><img src='https://images.steamusercontent.com/ugc/13052583757652582/12E91EA00F403FE9A44B356174F2829D899708B9/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false'></a></p></center></b><p><center><b>⮛ CUSTOMIZATION ⮛</b></p><img src='https://images.steamusercontent.com/ugc/13052583757652582/12E91EA00F403FE9A44B356174F2829D899708B9/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false'></a></p></center></b><hr>",
+				"type" : "text"
+			},
+			"rain" : 
+			{
+				"index" : 4,
+				"order" : 104,
+				"text" : "Rain",
+				"type" : "bool",
+				"value" : true
+			},
+			"rainsound" : 
+			{
+				"fraction" : true,
+				"index" : 8,
+				"max" : 1,
+				"min" : 0,
+				"order" : 108,
+				"precision" : 2,
+				"step" : 0.1,
+				"text" : "Rain Sound",
+				"type" : "slider",
+				"value" : 0.4
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0.12549019607843137 0.13333333333333333 0.11372549019607843"
+			},
+			"shortcut" : 
+			{
+				"index" : 15,
+				"order" : 115,
+				"text" : "Enable ShortCut",
+				"type" : "bool",
+				"value" : true
+			},
+			"shortcut1" : 
+			{
+				"index" : 14,
+				"order" : 114,
+				"text" : "SHORTCUT",
+				"type" : "group",
+				"value" : ""
+			},
+			"soundbar" : 
+			{
+				"index" : 5,
+				"order" : 105,
+				"text" : "SoundBar",
+				"type" : "bool",
+				"value" : true
+			}
+		},
+		"supportsaudioprocessing" : true,
+		"supportsvideo" : true,
+		"supportsvideoflags" : 2
+	},
+	"preview" : "preview.gif",
+	"ratingsex" : "none",
+	"ratingviolence" : "none",
+	"tags" : [ "Nature" ],
+	"title" : "northway - Daisies. 2 (feat. Shortcut, Media Info)",
+	"type" : "scene",
+	"version" : 0
+}

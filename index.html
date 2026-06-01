@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深夜鼓房 Midnight Drum Room</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    font-family: Georgia, 'Noto Serif SC', serif;
+    background: #07070d; color: #c8b8a0;
+    user-select: none;
+  }
+
+  /* Entry */
+  #entry {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: url('start_bg.png') center/cover no-repeat;
+    background-color: #0e0d16;
+    transition: opacity 1s ease, visibility 1s;
+  }
+  #entry.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  #entry .entry-tagline {
+    font-size: clamp(0.6rem, 0.85vw, 0.82rem);
+    color: rgba(200,180,145,0.35);
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    margin-bottom: clamp(16px, 2.5vh, 28px);
+    animation: fu 1s ease both;
+  }
+  #entry h1 {
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: rgba(235,220,190,0.92);
+    line-height: 1.25;
+    animation: fu 1s ease 0.15s both;
+  }
+  #entry .entry-subtitle {
+    margin-top: clamp(14px, 2vh, 22px);
+    font-size: clamp(0.82rem, 1.05vw, 1.05rem);
+    color: rgba(170,155,125,0.45);
+    letter-spacing: 0.06em;
+    line-height: 1.7;
+    max-width: min(480px, 60vw);
+    text-align: center;
+    animation: fu 1s ease 0.3s both;
+  }
+  #entry .enter-btn {
+    margin-top: clamp(36px, 5vh, 52px);
+    padding: clamp(12px, 1.7vh, 18px) clamp(32px, 4vw, 48px);
+    border: 1px solid rgba(190,160,90,0.18);
+    border-radius: 50px;
+    background: rgba(12,10,7,0.35);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: rgba(215,195,155,0.8);
+    font-family: inherit;
+    font-size: clamp(0.78rem, 1vw, 1rem);
+    letter-spacing: 0.18em;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(.2,.8,.2,1);
+    animation: fu 1s ease 0.5s both;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #entry .enter-btn:hover {
+    background: rgba(20,16,10,0.55);
+    border-color: rgba(210,175,100,0.35);
+    color: rgba(240,225,185,0.95);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 40px rgba(190,155,70,0.06);
+  }
+  @keyframes tg { from{text-shadow:0 0 40px rgba(212,168,106,0.2)} to{text-shadow:0 0 60px rgba(212,168,106,0.4)} }
+  @keyframes fu { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── Background Image ── */
+  #bg {
+    position: fixed; inset: 0;
+    z-index: 1;
+    overflow: hidden;
+  }
+  #bg-main {
+    position: absolute; inset: -40px;
+    background: url('bg_main.png') center/cover no-repeat;
+    background-color: #0e0d16;
+    transition: transform 0.15s ease-out, filter 0.3s ease;
+  }
+  #bg-depth {
+    position: absolute; inset: -40px;
+    background: url('bg_depth.png') center/cover no-repeat;
+    opacity: 0.15;
+    mix-blend-mode: soft-light;
+    transition: transform 0.1s ease-out, filter 0.3s ease;
+  }
+
+  /* ── Live2D Canvas ── */
+  #live2d-wrap {
+    position: fixed;
+    z-index: 10;
+    right: 0; top: 0;
+    width: 42vw; height: 100vh;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+  }
+  #live2d-wrap.hidden { opacity: 0; pointer-events: none; }
+  #live2d-canvas {
+    width: 100%; height: 100%;
+    cursor: grab;
+  }
+  #live2d-canvas:active { cursor: grabbing; }
+
+  /* ── Rain Audio ── */
+  #rain-audio { display: none; }
+
+  /* ── Vignette Overlay ── */
+  #vignette {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 75% 45%, transparent 30%, rgba(4,4,8,0.5) 100%);
+    pointer-events: none; z-index: 6;
+  }
+
+  /* ── Rain on Glass (Canvas) ════════ */
+  #rain-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+    width: 100%;
+    height: 100%;
+  }
+  #rain-canvas.active { opacity: 1; }
+
+  /* ═══════════ TOP NAV BAR ═══════════ */
+  #topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: clamp(44px, 6vh, 60px);
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(16px, 2.5vw, 36px);
+    z-index: 20;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .nav-left {
+    display: flex; align-items: center; gap: clamp(10px, 1.5vw, 18px);
+    pointer-events: auto;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px;
+    font-size: clamp(0.75rem, 1.05vw, 1.05rem);
+    color: rgba(210,185,150,0.7);
+    letter-spacing: 0.08em;
+  }
+  .nav-logo svg { width: clamp(16px, 2vw, 22px); height: auto; opacity: 0.55; }
+  .nav-center {
+    display: flex; align-items: center;
+    gap: clamp(18px, 3vw, 36px);
+    pointer-events: auto;
+  }
+  .nav-item {
+    font-size: clamp(0.62rem, 0.82vw, 0.85rem);
+    color: rgba(180,165,140,0.45);
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: color 0.3s, border-color 0.3s;
+    padding: clamp(4px, 0.7vh, 7px) clamp(10px, 1.3vw, 16px);
+    border-bottom: 1px solid transparent;
+  }
+  .nav-item:hover { color: rgba(220,195,155,0.75); border-bottom-color: rgba(200,170,110,0.15); }
+  .nav-item.active { color: rgba(225,200,160,0.9); border-bottom-color: rgba(210,175,110,0.45); }
+  .nav-right {
+    display: flex; align-items: center;
+    gap: clamp(8px, 1.2vw, 14px);
+    pointer-events: auto;
+  }
+  .nav-btn {
+    padding: clamp(4px, 0.6vh, 7px) clamp(12px, 1.5vw, 18px);
+    border: 1px solid rgba(180,150,90,0.2);
+    border-radius: clamp(14px, 1.8vw, 20px);
+    background: rgba(15,12,8,0.35);
+    backdrop-filter: blur(10px);
+    color: rgba(200,175,130,0.55);
+    font-family: inherit;
+    font-size: clamp(0.52rem, 0.72vw, 0.75rem);
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .nav-btn:hover { border-color: rgba(200,170,110,0.4); color: rgba(225,198,145,0.8); background: rgba(25,20,12,0.5); }
+
+  /* ═══════════ LEFT PANEL (Focus / Timer Mode) ═══════════ */
+  #left-panel {
+    position: fixed;
+    top: clamp(64px, 8vh, 88px); left: clamp(20px, 2.8vw, 36px);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 1.8vh, 22px);
+    max-width: clamp(280px, 30vw, 380px);
+    width: auto;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #left-panel.mode-hidden { opacity: 0; pointer-events: none; transform: translateX(-24px); }
+
+  /* ── Pomodoro Card ── */
+  .pomodoro-card {
+    background: rgba(12,10,7,0.55);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(170,135,65,0.13);
+    border-radius: clamp(14px, 1.8vw, 22px);
+    padding: clamp(18px, 2.6vh, 32px) clamp(22px, 3vw, 36px);
+    min-width: clamp(240px, 26vw, 340px);
+  }
+  .pomodoro-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: clamp(12px, 1.6vh, 20px);
+  }
+  .pomodoro-label {
+    font-size: clamp(0.68rem, 0.88vw, 0.92rem);
+    color: rgba(190,165,120,0.45);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .pomodoro-badge {
+    font-size: clamp(0.6rem, 0.78vw, 0.82rem);
+    color: rgba(160,200,160,0.6);
+    padding: 3px clamp(10px, 1.4vw, 14px);
+    border: 1px solid rgba(140,180,140,0.2);
+    border-radius: 10px;
+    letter-spacing: 0.04em;
+  }
+  .pomodoro-time {
+    font-size: clamp(2.6rem, 5.2vw, 4.8rem);
+    font-weight: 300;
+    color: rgba(230,215,185,0.88);
+    letter-spacing: 0.03em;
+    line-height: 1;
+    margin-bottom: clamp(12px, 1.6vh, 18px);
+    font-variant-numeric: tabular-nums;
+  }
+  .pomodoro-progress-wrap {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .pomodoro-progress-label {
+    font-size: clamp(0.58rem, 0.76vw, 0.78rem);
+    color: rgba(170,150,115,0.35);
+    letter-spacing: 0.04em;
+  }
+  .pomodoro-progress-pct {
+    font-size: clamp(0.58rem, 0.76vw, 0.78rem);
+    color: rgba(190,168,125,0.4);
+  }
+  .pomodoro-progress-bar {
+    width: 100%; height: clamp(4px, 0.55vh, 6px);
+    background: rgba(180,150,90,0.12);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .pomodoro-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(190,160,80,0.35), rgba(210,178,95,0.5));
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  /* Pomodoro control buttons below card */
+  .pomo-controls {
+    display: flex; gap: 6px;
+    margin-top: 4px;
+  }
+  .pomo-btn {
+    flex: 1;
+    padding: clamp(7px, 1vh, 11px) 0;
+    border: 1px solid rgba(170,140,85,0.14);
+    border-radius: 8px;
+    background: rgba(12,10,7,0.45);
+    color: rgba(195,170,125,0.5);
+    font-family: inherit;
+    font-size: clamp(0.64rem, 0.84vw, 0.88rem);
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: center;
+    letter-spacing: 0.06em;
+  }
+  .pomo-btn:hover { border-color: rgba(200,168,100,0.3); color: rgba(218,192,142,0.8); background: rgba(25,20,12,0.55); }
+
+  /* ── Goal Input ═══════════ */
+  .goal-card {
+    background: rgba(12,10,7,0.5);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(170,135,65,0.11);
+    border-radius: clamp(12px, 1.6vw, 18px);
+    padding: clamp(12px, 1.7vh, 20px) clamp(16px, 2.2vw, 26px);
+    display: flex; align-items: center; gap: clamp(10px, 1.3vw, 16px);
+  }
+  .goal-icon {
+    font-size: clamp(0.82rem, 1.1vw, 1.15rem);
+    opacity: 0.35;
+    flex-shrink: 0;
+  }
+  .goal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: rgba(200,175,135,0.5);
+    font-family: inherit;
+    font-size: clamp(0.72rem, 0.96vw, 1rem);
+    letter-spacing: 0.02em;
+  }
+  .goal-input::placeholder { color: rgba(160,140,105,0.3); }
+
+  /* ── Goal Display (center overlay) ════════ */
+  #goal-display {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    z-index: 25;
+    background: rgba(12,10,7,0.7);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(190,155,70,0.15);
+    border-radius: clamp(16px, 2vw, 24px);
+    padding: clamp(20px, 3vh, 36px) clamp(32px, 4vw, 48px);
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(.2,.8,.2,1);
+    max-width: min(600px, 70vw);
+  }
+  #goal-display.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  #goal-display-label {
+    font-size: clamp(0.6rem, 0.8vw, 0.82rem);
+    color: rgba(180,155,110,0.35);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: clamp(10px, 1.6vh, 18px);
+  }
+  #goal-display-text {
+    font-size: clamp(1.2rem, 2vw, 2rem);
+    font-weight: 300;
+    color: rgba(230,215,185,0.88);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+  }
+
+  /* ── Goal History ════════ */
+  #goal-history {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.7vh, 7px);
+    margin-top: clamp(3px, 0.6vh, 6px);
+  }
+  .goal-history-item {
+    background: rgba(12,10,7,0.4);
+    border: 1px solid rgba(170,135,65,0.08);
+    border-radius: clamp(8px, 1.1vw, 12px);
+    padding: clamp(6px, 0.9vh, 10px) clamp(12px, 1.5vw, 18px);
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    transition: opacity 0.35s ease;
+  }
+  .goal-hist-text {
+    font-size: clamp(0.64rem, 0.84vw, 0.88rem);
+    color: rgba(210,190,150,0.55);
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .goal-hist-time {
+    font-size: clamp(0.46rem, 0.6vw, 0.64rem);
+    color: rgba(160,140,105,0.25);
+    letter-spacing: 0.06em;
+  }
+
+  /* ═══════════ BOTTOM DOCK (Music Player) ═══════════ */
+  #bottom-dock {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 19;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0;
+    transition: padding-bottom 0.4s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+  }
+  #bottom-dock:hover,
+  #bottom-dock.expanded {
+    padding-bottom: clamp(12px, 2vh, 24px);
+  }
+
+  #dock-inner {
+    background: rgba(12,10,7,0.58);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(170,135,65,0.11);
+    border-bottom: none;
+    border-radius: clamp(14px, 1.8vw, 22px) clamp(14px, 1.8vw, 22px) 0 0;
+    padding: clamp(8px, 1.2vh, 14px) clamp(20px, 3vw, 38px);
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 2.5vw, 34px);
+    min-width: clamp(340px, 55vw, 800px);
+    max-width: clamp(600px, 82vw, 1100px);
+    pointer-events: auto;
+    transition: padding 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s ease;
+    opacity: 0.55;
+  }
+  #bottom-dock:hover #dock-inner,
+  #bottom-dock.expanded #dock-inner {
+    opacity: 1;
+    padding: clamp(12px, 1.8vh, 20px) clamp(24px, 3.5vw, 44px);
+  }
+
+  /* Dock hint line */
+  #dock-hint {
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: clamp(40px, 5vw, 64px);
+    height: 3px;
+    background: rgba(180,148,85,0.25);
+    border-radius: 2px;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+  #bottom-dock:hover #dock-hint { opacity: 0.3; }
+
+  /* Music info in dock */
+  .dock-music-info {
+    display: flex; flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+  .dock-title-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .dock-title {
+    font-size: clamp(0.62rem, 0.86vw, 0.9rem);
+    color: rgba(215,188,140,0.8);
+    letter-spacing: 0.03em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 70%;
+  }
+  .dock-time {
+    font-size: clamp(0.48rem, 0.64vw, 0.66rem);
+    color: rgba(165,145,110,0.35);
+    font-variant-numeric: tabular-nums;
+  }
+  .dock-progress {
+    width: 100%; height: clamp(2.5px, 0.35vh, 3.5px);
+    background: rgba(180,150,90,0.13);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .dock-progress-fill {
+    height: 100%; background: rgba(205,172,105,0.5);
+    border-radius: 2px; width: 0%;
+    pointer-events: none;
+    transition: width 0.3s linear;
+  }
+
+  /* Dock transport buttons */
+  .dock-transport {
+    display: flex; align-items: center; gap: clamp(6px, 1vw, 12px);
+  }
+  .dock-btn {
+    background: none; border: none; cursor: pointer;
+    color: rgba(200,175,130,0.5);
+    font-family: inherit;
+    font-size: clamp(0.72rem, 1vw, 1.05rem);
+    padding: 4px;
+    transition: all 0.25s;
+  }
+  .dock-btn:hover { color: rgba(228,200,150,0.9); }
+  .dock-btn.play-btn { font-size: clamp(0.9rem, 1.3vw, 1.35rem); }
+
+  /* Dock sliders group */
+  .dock-sliders {
+    display: flex; align-items: center;
+    gap: clamp(14px, 2vw, 26px);
+  }
+  .dock-slider-group {
+    display: flex; align-items: center; gap: 5px;
+  }
+  .dock-slider-label {
+    font-size: clamp(0.46rem, 0.6vw, 0.62rem);
+    color: rgba(170,148,115,0.38);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .dock-slider {
+    -webkit-appearance: none;
+    width: clamp(60px, 7.5vw, 100px);
+    height: 2px;
+    background: rgba(180,148,85,0.18);
+    border-radius: 2px;
+    outline: none; cursor: pointer;
+  }
+  .dock-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: clamp(9px, 1.1vw, 12px);
+    height: clamp(9px, 1.1vw, 12px);
+    background: rgba(205,172,105,0.5);
+    border-radius: 50%; border: none;
+  }
+
+  /* Dock extra tools */
+  .dock-tools {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dock-tool-btn {
+    padding: 3px clamp(8px, 1vw, 12px);
+    border: 1px solid rgba(165,135,75,0.12);
+    border-radius: 8px;
+    background: transparent;
+    color: rgba(185,160,120,0.38);
+    font-family: inherit;
+    font-size: clamp(0.44rem, 0.58vw, 0.6rem);
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.04em;
+  }
+  .dock-tool-btn:hover { border-color: rgba(195,165,105,0.28); color: rgba(215,188,142,0.7); background: rgba(30,24,14,0.4); }
+
+  /* ═══════════ RIGHT PANEL (Sleep Mode) ═══════════ */
+  #right-panel {
+    position: fixed;
+    top: clamp(64px, 8vh, 88px); right: clamp(20px, 2.8vw, 36px);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 1.6vh, 18px);
+    max-width: clamp(280px, 30vw, 380px);
+    width: auto;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #right-panel.mode-hidden { opacity: 0; pointer-events: none; transform: translateX(24px); }
+
+  .sleep-card {
+    background: rgba(12,10,7,0.55);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(130,120,160,0.13);
+    border-radius: clamp(12px, 1.6vw, 18px);
+    padding: clamp(14px, 1.9vh, 22px) clamp(16px, 2.2vw, 24px);
+  }
+  .sleep-header {
+    font-size: clamp(0.56rem, 0.72vw, 0.76rem);
+    color: rgba(170,165,190,0.45);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: clamp(10px, 1.4vh, 16px);
+  }
+  .sleep-countdown {
+    font-size: clamp(1.5rem, 3vw, 2.6rem);
+    font-weight: 300;
+    color: rgba(210,205,225,0.78);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin-bottom: clamp(10px, 1.4vh, 16px);
+    font-variant-numeric: tabular-nums;
+  }
+  .sleep-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .sleep-btn {
+    padding: clamp(6px, 0.9vh, 10px) 0;
+    border: 1px solid rgba(140,130,165,0.14);
+    border-radius: 8px;
+    background: rgba(12,10,14,0.4);
+    color: rgba(180,172,200,0.42);
+    font-family: inherit;
+    font-size: clamp(0.5rem, 0.66vw, 0.68rem);
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.04em;
+  }
+  .sleep-btn:hover, .sleep-btn.on {
+    border-color: rgba(160,152,185,0.3);
+    color: rgba(208,200,225,0.72);
+    background: rgba(25,22,32,0.5);
+  }
+  .sleep-btn.danger:hover {
+    border-color: rgba(170,100,100,0.3);
+    color: rgba(215,140,138,0.7);
+    background: rgba(40,20,22,0.45);
+  }
+
+  /* ── Timer Display (top-left under nav) ── */
+  #timer-display {
+    position: fixed;
+    top: clamp(52px, 7vh, 76px);
+    left: clamp(16px, 2.5vw, 32px);
+    font-size: clamp(0.54rem, 0.74vw, 0.76rem);
+    color: rgba(200,165,75,0.55);
+    z-index: 20;
+    letter-spacing: 0.06em;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    transition: opacity 0.5s;
+  }
+
+  /* ── Loading ── */
+  #loading {
+    position: fixed; inset: 0; z-index: 99;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    transition: opacity 1s ease, visibility 1s;
+  }
+  #loading.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  #loading span { font-size: 0.8rem; color: rgba(200,170,100,0.5); letter-spacing: 0.15em; }
+
+  /* ═══════════ SETUP PAGE ═══════════ */
+  #setup {
+    position: fixed; inset: 0; z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(7,7,13,0.92);
+    backdrop-filter: blur(30px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.6s ease, visibility 0.6s;
+    padding: clamp(20px, 3vh, 40px) clamp(16px, 2.5vw, 36px);
+  }
+  #setup.visible { opacity: 1; visibility: visible; pointer-events: auto; }
+  .setup-grid {
+    display: flex;
+    gap: clamp(16px, 2.5vw, 36px);
+    width: 100%;
+    max-width: clamp(880px, 92vw, 1200px);
+    height: clamp(520px, 70vh, 720px);
+  }
+
+  /* Left column: Scene selection */
+  .setup-left {
+    flex: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 1.6vh, 18px);
+    min-width: 0;
+  }
+  .setup-step-label {
+    font-size: clamp(0.46rem, 0.62vw, 0.64rem);
+    color: rgba(180,165,140,0.35);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .setup-section-title {
+    font-size: clamp(1rem, 1.5vw, 1.5rem);
+    font-weight: 300;
+    color: rgba(230,215,185,0.85);
+    letter-spacing: 0.06em;
+    margin-bottom: clamp(10px, 1.4vh, 14px);
+  }
+  .scene-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(10px, 1.4vh, 16px);
+    flex: 1;
+  }
+  .scene-card {
+    position: relative;
+    border-radius: clamp(12px, 1.6vw, 18px);
+    overflow: hidden;
+    cursor: pointer;
+    border: 1.5px solid rgba(170,145,85,0.12);
+    transition: all 0.35s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .scene-card:hover {
+    border-color: rgba(200,172,105,0.35);
+    transform: translateY(-2px);
+  }
+  .scene-card.selected {
+    border-color: rgba(210,180,110,0.55);
+    box-shadow: 0 0 24px rgba(210,180,110,0.12), inset 0 0 20px rgba(210,180,110,0.04);
+  }
+  .scene-card-img {
+    width: 100%;
+    aspect-ratio: 16/10;
+    object-fit: cover;
+    filter: brightness(0.65) saturate(0.9);
+    transition: all 0.4s ease;
+  }
+  .scene-card:hover .scene-card-img {
+    filter: brightness(0.75) saturate(1);
+  }
+  .scene-card.selected .scene-card-img {
+    filter: brightness(0.82) saturate(1.05);
+  }
+  .scene-tag {
+    position: absolute;
+    top: clamp(8px, 1.2vh, 12px); right: clamp(8px, 1.2vh, 12px);
+    font-size: clamp(0.38rem, 0.52vw, 0.54rem);
+    color: rgba(200,185,155,0.35);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border: 1px solid rgba(180,160,120,0.15);
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    background: rgba(15,12,10,0.3);
+  }
+  .scene-info {
+    padding: clamp(10px, 1.4vh, 16px) clamp(12px, 1.6vw, 18px);
+    background: linear-gradient(to bottom, rgba(12,10,7,0.65), rgba(14,11,9,0.78));
+    backdrop-filter: blur(12px);
+  }
+  .scene-name {
+    font-size: clamp(0.72rem, 1vw, 1.05rem);
+    color: rgba(230,218,190,0.88);
+    letter-spacing: 0.03em;
+    margin-bottom: 3px;
+  }
+  .scene-desc {
+    font-size: clamp(0.44rem, 0.58vw, 0.6rem);
+    color: rgba(175,158,125,0.38);
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+  }
+  .scene-sub {
+    font-size: clamp(0.38rem, 0.5vw, 0.52rem);
+    color: rgba(155,140,110,0.28);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Right column: Settings */
+  .setup-right {
+    flex: 0.85;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(18px, 2.5vh, 28px);
+    min-width: 0;
+  }
+  .setup-panel {
+    background: rgba(14,11,9,0.45);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(160,135,80,0.1);
+    border-radius: clamp(14px, 1.8vw, 22px);
+    padding: clamp(16px, 2.2vh, 26px) clamp(18px, 2.4vw, 26px);
+  }
+  .setting-row {
+    margin-bottom: clamp(14px, 2vh, 22px);
+  }
+  .setting-row:last-child { margin-bottom: 0; }
+  .setting-label-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: clamp(8px, 1.2vh, 12px);
+  }
+  .setting-icon {
+    font-size: clamp(0.68rem, 0.92vw, 0.95rem);
+    opacity: 0.4;
+  }
+  .setting-name {
+    font-size: clamp(0.64rem, 0.86vw, 0.88rem);
+    color: rgba(210,192,158,0.7);
+    letter-spacing: 0.04em;
+  }
+  .setting-hint {
+    font-size: clamp(0.42rem, 0.56vw, 0.58rem);
+    color: rgba(160,142,110,0.28);
+    margin-top: 3px;
+    letter-spacing: 0.02em;
+  }
+  .setup-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    background: rgba(170,140,80,0.15);
+    border-radius: 3px;
+    outline: none; cursor: pointer;
+  }
+  .setup-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: clamp(14px, 1.8vw, 20px);
+    height: clamp(14px, 1.8vw, 20px);
+    background: rgba(220,195,150,0.7);
+    border-radius: 50%;
+    border: 2px solid rgba(255,250,235,0.15);
+    cursor: grab;
+    transition: transform 0.2s;
+  }
+  .setup-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  .setup-slider::-webkit-slider-thumb:active { cursor: grabbing; }
+
+  /* Pomodoro duration buttons */
+  .pomo-dur-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .pomo-dur-btn {
+    padding: clamp(8px, 1.1vh, 13px) 0;
+    border: 1px solid rgba(165,138,80,0.14);
+    border-radius: 10px;
+    background: rgba(16,13,10,0.4);
+    color: rgba(195,172,132,0.48);
+    font-family: inherit;
+    font-size: clamp(0.54rem, 0.72vw, 0.74rem);
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.06em;
+  }
+  .pomo-dur-btn:hover { border-color: rgba(195,166,105,0.28); color: rgba(220,196,148,0.75); }
+  .pomo-dur-btn.selected {
+    border-color: rgba(210,182,115,0.45);
+    background: rgba(35,28,16,0.55);
+    color: rgba(230,208,162,0.88);
+    box-shadow: 0 0 12px rgba(210,182,115,0.08);
+  }
+
+  /* Enter button */
+  .setup-enter-btn {
+    width: 100%;
+    padding: clamp(12px, 1.7vh, 18px) 0;
+    border: 1px solid rgba(185,155,90,0.2);
+    border-radius: 14px;
+    background: rgba(25,20,12,0.5);
+    color: rgba(215,190,145,0.7);
+    font-family: inherit;
+    font-size: clamp(0.66rem, 0.88vw, 0.92rem);
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.4s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: auto;
+  }
+  .setup-enter-btn:hover {
+    border-color: rgba(212,178,108,0.45);
+    background: rgba(35,28,16,0.65);
+    color: rgba(240,218,170,0.9);
+    box-shadow: 0 0 24px rgba(212,178,108,0.08);
+  }
+
+  /* ── Clear screen mode ── */
+  body.ui-hidden #topbar,
+  body.ui-hidden #left-panel,
+  body.ui-hidden #right-panel,
+  body.ui-hidden #bottom-dock,
+  body.ui-hidden #timer-display,
+  body.ui-hidden #setup { opacity: 0 !important; pointer-events: none !important; }
+</style>
+</head>
+<body>
+<div id="loading"><span>loading...</span></div>
+
+<div id="entry">
+  <span class="entry-tagline">FOCUS · RELAX · IMMERSE</span>
+  <h1>开启你的沉浸自习室</h1>
+  <p class="entry-subtitle">选择场景、音乐与节奏，在雨声与暖灯中找到属于你的专注角落。</p>
+  <button class="enter-btn" onclick="showSetup()">进入自习室 <span>&#10140;</span></button>
+</div>
+
+<!-- Setup Page -->
+<div id="setup">
+  <div class="setup-grid">
+    <!-- Left: Scene Selection -->
+    <div class="setup-left">
+      <span class="setup-step-label">STEP 01</span>
+      <h2 class="setup-section-title">选择你的学习场景</h2>
+      <div class="scene-grid">
+        <div class="scene-card selected" data-scene="1" onclick="selectScene(this)">
+          <img class="scene-card-img" src="bg_main.png" alt="深夜鼓房">
+          <span class="scene-tag">SCENE</span>
+          <div class="scene-info">
+            <div class="scene-name">深夜鼓房</div>
+            <div class="scene-desc">雨声、暖灯、低声环境音</div>
+            <div class="scene-sub">默认场景 · 当前启用</div>
+          </div>
+        </div>
+        <div class="scene-card" data-scene="2" onclick="selectScene(this)">
+          <img class="scene-card-img" src="bg_scene2.jpg" alt="雨天咖啡店">
+          <span class="scene-tag">SCENE</span>
+          <div class="scene-info">
+            <div class="scene-name">雨天咖啡店</div>
+            <div class="scene-desc">暖灯、咖啡、低声环境音</div>
+            <div class="scene-sub">雨声与爵士氛围</div>
+          </div>
+        </div>
+        <div class="scene-card" data-scene="3" onclick="selectScene(this)">
+          <img class="scene-card-img" src="bg_scene3.jpg" alt="深夜图书馆">
+          <span class="scene-tag">SCENE</span>
+          <div class="scene-info">
+            <div class="scene-name">深夜图书馆</div>
+            <div class="scene-desc">书桌、台灯、低干扰</div>
+            <div class="scene-sub">极简专注 · 暖白光感</div>
+          </div>
+        </div>
+        <div class="scene-card" data-scene="4" onclick="selectScene(this)">
+          <img class="scene-card-img" src="bg_scene4.jpg" alt="海边书房">
+          <span class="scene-tag">SCENE</span>
+          <div class="scene-info">
+            <div class="scene-name">海边书房</div>
+            <div class="scene-desc">海风、蓝调、开阔视野</div>
+            <div class="scene-sub">宽松自由风</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Settings -->
+    <div class="setup-right">
+      <!-- Sound settings -->
+      <div class="setup-panel">
+        <span class="setup-step-label">STEP 02</span>
+        <h3 class="setup-section-title" style="font-size:clamp(0.85rem,1.15vw,1.2rem);margin-bottom:16px;">设置声音氛围</h3>
+        <div class="setting-row">
+          <div class="setting-label-row">
+            <span class="setting-icon">&#9835;</span>
+            <span class="setting-name">音乐</span>
+          </div>
+          <div class="setting-hint">Lo-fi、轻音乐、钢琴等专注音乐</div>
+          <input type="range" class="setup-slider" id="setupMusicVol" min="0" max="100" value="60" oninput="document.getElementById('volumeSlider').value=this.value;setVolume(this.value)">
+        </div>
+        <div class="setting-row">
+          <div class="setting-label-row">
+            <span class="setting-icon">&#127793;</span>
+            <span class="setting-name">背景音</span>
+          </div>
+          <div class="setting-hint">根据当前场景自动匹配环境声</div>
+          <input type="range" class="setup-slider" id="setupRainVol" min="0" max="100" value="50" oninput="document.getElementById('rainSlider').value=this.value;setRainIntensity(this.value)">
+        </div>
+      </div>
+
+      <!-- Pomodoro duration -->
+      <div class="setup-panel">
+        <span class="setup-step-label">STEP 03</span>
+        <h3 class="setup-section-title" style="font-size:clamp(0.85rem,1.15vw,1.2rem);margin-bottom:16px;">设置番茄钟</h3>
+        <div class="pomo-dur-grid">
+          <button class="pomo-dur-btn selected" onclick="selectPomoDur(this,25)">25 分钟</button>
+          <button class="pomo-dur-btn" onclick="selectPomoDur(this,45)">45 分钟</button>
+          <button class="pomo-dur-btn" onclick="selectPomoDur(this,50)">50 分钟</button>
+          <button class="pomo-dur-btn" onclick="selectPomoDur(this,90)">90 分钟</button>
+        </div>
+      </div>
+
+      <!-- Enter button -->
+      <button class="setup-enter-btn" onclick="enterRoom()">
+        进入自习室 &#10140;
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Background -->
+<div id="bg"><div id="bg-main"></div><div id="bg-depth"></div></div>
+<div id="live2d-wrap" class="hidden"><canvas id="live2d-canvas"></canvas></div>
+<audio id="rain-audio" src="rain.mp3" loop preload="auto"></audio>
+<div id="vignette"></div>
+<canvas id="rain-canvas"></canvas>
+
+<!-- Top Nav Bar -->
+<div id="topbar">
+  <div class="nav-left">
+    <div class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      深夜鼓房
+    </div>
+  </div>
+  <div class="nav-center">
+    <span class="nav-item active" data-mode="scene" onclick="switchMode('scene',this)">场景</span>
+    <span class="nav-item" data-mode="music" onclick="switchMode('music',this)">音乐</span>
+    <span class="nav-item" data-mode="timer" onclick="switchMode('timer',this)">计时</span>
+    <span class="nav-item" data-mode="sleep" onclick="switchMode('sleep',this)">睡眠</span>
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="toggleUI()">
+      <span>&#9783;</span> 清屏模式
+    </button>
+  </div>
+</div>
+
+<!-- Left Panel: Focus / Timer -->
+<div id="left-panel">
+  <!-- Pomodoro Timer Card -->
+  <div class="pomodoro-card">
+    <div class="pomodoro-header">
+      <span class="pomodoro-label">POMODORO <span id="pomo-count">01</span></span>
+      <span class="pomodoro-badge" id="pomo-badge">&#9679; 待开始</span>
+    </div>
+    <div class="pomodoro-time" id="pomo-time">25:00</div>
+    <div class="pomodoro-progress-wrap">
+      <span class="pomodoro-progress-label">本轮进度</span>
+      <span class="pomodoro-progress-pct" id="pomo-pct">0%</span>
+    </div>
+    <div class="pomodoro-progress-bar">
+      <div class="pomodoro-progress-fill" id="pomo-fill"></div>
+    </div>
+    <div class="pomo-controls">
+      <button class="pomo-btn" id="pauseBtn" onclick="togglePomodoro()">&#9654; 开始</button>
+      <button class="pomo-btn" onclick="skipPomodoro()">&#9193; 跳过</button>
+      <button class="pomo-btn" onclick="resetPomodoro()">&#8635; 重置</button>
+    </div>
+  </div>
+</div>
+
+<!-- Center Goal Display Overlay -->
+<div id="goal-display">
+  <div id="goal-display-label">TODAY'S GOAL</div>
+  <div id="goal-display-text"></div>
+</div>
+
+<!-- Right Panel: Sleep Mode -->
+<div id="right-panel">
+  <div class="sleep-card" style="display:none">
+    <div class="sleep-header">SLEEP TIMER</div>
+    <div class="sleep-countdown" id="sleep-display">--:--</div>
+    <div class="sleep-buttons">
+      <button class="sleep-btn" onclick="setTimer(30)">30 分钟</button>
+      <button class="sleep-btn" onclick="setTimer(60)">1 小时</button>
+      <button class="sleep-btn" onclick="setTimer(90)">1.5 小时</button>
+      <button class="sleep-btn" onclick="setTimer(120)">2 小时</button>
+      <button class="sleep-btn danger" onclick="setTimer(0)" style="grid-column: span 2;">关闭定时</button>
+    </div>
+  </div>
+
+  <!-- Goal Input -->
+  <div class="goal-card">
+    <span class="goal-icon">&#9783;</span>
+    <input type="text" class="goal-input" placeholder="今日目标 · 写下今天想完成的事..." id="goalInput">
+  </div>
+  <div id="goal-history"></div>
+</div>
+
+<!-- Bottom Dock: Music Player -->
+<div id="bottom-dock">
+  <div id="dock-hint"></div>
+  <div id="dock-inner">
+    <!-- Song info + progress -->
+    <div class="dock-music-info">
+      <div class="dock-title-row">
+        <span class="dock-title" id="player-title">-</span>
+        <span class="dock-time"><span id="timeNow">0:00</span> / <span id="timeEnd">0:00</span></span>
+      </div>
+      <div class="dock-progress" id="progressBar"><div class="dock-progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- Transport controls -->
+    <div class="dock-transport">
+      <button class="dock-btn" onclick="prevTrack()">&#9664;&#9664;</button>
+      <button class="dock-btn play-btn" id="playBtn" onclick="togglePlay()">&#9654;</button>
+      <button class="dock-btn" onclick="nextTrack()">&#9654;&#9654;</button>
+    </div>
+
+    <!-- Sliders -->
+    <div class="dock-sliders">
+      <div class="dock-slider-group">
+        <span class="dock-slider-label">音乐</span>
+        <input type="range" class="dock-slider" id="volumeSlider" min="0" max="100" value="60" oninput="setVolume(this.value)">
+      </div>
+      <div class="dock-slider-group">
+        <span class="dock-slider-label">雨声</span>
+        <input type="range" class="dock-slider" id="rainSlider" min="0" max="100" value="50" oninput="setRainIntensity(this.value)">
+      </div>
+      <div class="dock-slider-group">
+        <span class="dock-slider-label">模糊</span>
+        <input type="range" class="dock-slider" id="blurSlider" min="0" max="100" value="15" oninput="setBgBlur(this.value)">
+      </div>
+    </div>
+
+    <!-- Tools -->
+    <div class="dock-tools">
+      <button class="dock-tool-btn" onclick="toggleLive2D()">&#128065; 角色</button>
+    </div>
+  </div>
+</div>
+
+<div id="timer-display"></div>
+
+<!-- Live2D SDK + PIXI -->
+<script src="live2dcubismcore.min.js?v=r6"></script>
+<script src="pixi8.min.js"></script>
+<script src="pixi-sound.js"></script>
+<script src="cubism5.min.js?v=patched2"></script>
+
+<script>
+"use strict";
+
+// ═══════════ MODE SWITCHING ═══════════
+function switchMode(mode, el) {
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  if(el) el.classList.add('active');
+  var lp = document.getElementById('left-panel');
+  var rp = document.getElementById('right-panel');
+  var sc = document.querySelector('.sleep-card');
+  var gc = document.querySelector('.goal-card');
+  var gh = document.getElementById('goal-history');
+
+  if(mode === 'timer') {
+    lp.classList.remove('mode-hidden');
+    rp.classList.remove('mode-hidden');
+    if(sc) sc.style.display='none';
+    if(gc) gc.style.display='';
+    if(gh) gh.style.display='';
+  } else if(mode === 'sleep') {
+    lp.classList.add('mode-hidden');
+    rp.classList.remove('mode-hidden');
+    if(sc) sc.style.display='';
+    if(gc) gc.style.display='';
+    if(gh) gh.style.display='';
+  } else if(mode === 'scene') {
+    lp.classList.add('mode-hidden');
+    rp.classList.remove('mode-hidden');
+    if(sc) sc.style.display='none';
+    if(gc) gc.style.display='';
+    if(gh) gh.style.display='';
+  } else if(mode === 'music') {
+    var dock = document.getElementById('bottom-dock');
+    dock.classList.add('expanded');
+    setTimeout(function(){ dock.classList.remove('expanded'); }, 3000);
+    lp.classList.add('mode-hidden');
+    rp.classList.remove('mode-hidden');
+    if(sc) sc.style.display='none';
+    if(gc) gc.style.display='';
+    if(gh) gh.style.display='';
+  }
+}
+
+// ═══════════ Live2D ═══════════
+var pixiApp = null;
+var live2dModel = null;
+var modelNatW = 0;
+var modelNatH = 0;
+
+function fitLive2d() {
+  if (!live2dModel || !modelNatW || !modelNatH) return;
+  var wrap = document.getElementById('live2d-wrap');
+  var cw = wrap.offsetWidth;
+  var ch = wrap.offsetHeight;
+  var s = Math.min(cw / modelNatW, ch / modelNatH) * 0.85;
+  live2dModel.scale.set(s);
+  live2dModel.x = cw / 2;
+  live2dModel.y = ch / 1.35;
+}
+
+function waitForCubismCore(retries, interval) {
+  retries = retries || 50;
+  interval = interval || 100;
+  return new Promise(function(resolve, reject) {
+    function check() {
+      var ready = typeof Live2DCubismCore !== 'undefined' &&
+          typeof Live2DCubismCore.Model !== 'undefined' &&
+          typeof Live2DCubismCore.Model.fromMoc === 'function';
+      if (ready) {
+        resolve();
+      } else if (--retries <= 0) {
+        reject(new Error('Cubism Core not available: ' + typeof Live2DCubismCore));
+      } else {
+        setTimeout(check, interval);
+      }
+    }
+    check();
+  });
+}
+
+async function initLive2d() {
+  var wrap = document.getElementById('live2d-wrap');
+  var canvas = document.getElementById('live2d-canvas');
+
+  try {
+    canvas.width = wrap.offsetWidth;
+    canvas.height = wrap.offsetHeight;
+
+    await waitForCubismCore();
+
+    PIXI.extensions.add(PIXI.live2d.Live2DPlugin);
+
+    pixiApp = new PIXI.Application();
+    await pixiApp.init({
+      canvas: canvas,
+      width: canvas.width,
+      height: canvas.height,
+      backgroundAlpha: 0,
+      antialias: true,
+      resolution: window.devicePixelRatio || 1
+    });
+
+    live2dModel = await PIXI.live2d.Live2DModel.from('nijika/seethrough_output2.model3.json');
+
+    modelNatW = live2dModel.width / live2dModel.scale.x;
+    modelNatH = live2dModel.height / live2dModel.scale.y;
+    live2dModel.anchor.set(0.5, 0.5);
+
+    pixiApp.stage.addChild(live2dModel);
+
+    fitLive2d();
+
+    document.getElementById('loading').classList.add('hidden');
+
+  } catch (error) {
+    console.error('Live2D initialization error:', error);
+    document.getElementById('loading').classList.add('hidden');
+  }
+}
+
+window.addEventListener('resize', function() {
+  if (!pixiApp) return;
+  var wrap = document.getElementById('live2d-wrap');
+  var rect = wrap.getBoundingClientRect();
+  pixiApp.renderer.resize(rect.width, rect.height);
+  fitLive2d();
+});
+
+// ═══════════ Live2D Drag to Move ═══════════
+var l2dDragging = false;
+var l2dDragOffsetX = 0, l2dDragOffsetY = 0;
+
+function initLive2DDrag() {
+  var canvas = document.getElementById('live2d-canvas');
+  canvas.addEventListener('mousedown', function(e) {
+    if (!live2dModel) return;
+    l2dDragging = true;
+    var rect = canvas.getBoundingClientRect();
+    l2dDragOffsetX = e.clientX - rect.left - (live2dModel.x / (window.devicePixelRatio || 1));
+    l2dDragOffsetY = e.clientY - rect.top - (live2dModel.y / (window.devicePixelRatio || 1));
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (!l2dDragging || !live2dModel) return;
+    var canvas = document.getElementById('live2d-canvas');
+    var rect = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    live2dModel.x = ((e.clientX - rect.left) - l2dDragOffsetX) * dpr;
+    live2dModel.y = ((e.clientY - rect.top) - l2dDragOffsetY) * dpr;
+  });
+  document.addEventListener('mouseup', function() { l2dDragging = false; });
+}
+
+// ═══════════ Live2D Show/Hide Toggle ═══════════
+function toggleLive2D() {
+  var wrap = document.getElementById('live2d-wrap');
+  wrap.classList.toggle('hidden');
+  var btn = event.target;
+  if (wrap.classList.contains('hidden')) {
+    btn.innerHTML = '&#128065; 显示';
+  } else {
+    btn.innerHTML = '&#128065; 隐藏';
+  }
+}
+
+// ═══════════ Background Blur Slider ═══════════
+function setBgBlur(v) {
+  var px = v * 0.3;
+  document.getElementById('bg-main').style.filter = 'blur(' + px + 'px)';
+  document.getElementById('bg-depth').style.filter = 'blur(' + px + 'px)';
+  if(rainSys){
+    var cfg=sceneConfigs[selectedScene];
+    if(cfg&&cfg.bgMain)rainSys.setBg(cfg.bgMain,px);
+  }
+}
+
+// ═══════════ Parallax ═══════════
+var bgMain = document.getElementById('bg-main');
+var bgDepth = document.getElementById('bg-depth');
+document.addEventListener('mousemove', function(e) {
+  var cx = (e.clientX / window.innerWidth - 0.5) * 2;
+  var cy = (e.clientY / window.innerHeight - 0.5) * 2;
+  bgMain.style.transform = 'translate(' + (-cx * 8) + 'px,' + (-cy * 5) + 'px)';
+  bgDepth.style.transform = 'translate(' + (-cx * 20) + 'px,' + (-cy * 14) + 'px)';
+});
+
+// ═══════════ Music Player ═══════════
+var playlist = [
+  { title: '卢广仲 - 我爱你', src: 'music/卢广仲 - 我爱你.mp3' },
+  { title: '小精灵 - 恋是爱的呕吐物', src: 'music/小精灵 - 恋是爱的呕吐物.mp3' },
+  { title: '蛋堡 - 关于小熊', src: 'music/蛋堡 - 关于小熊.mp3' }
+];
+var trackIdx = 0;
+var audio = new Audio();
+audio.volume = 0.6;
+audio.preload = 'auto';
+var playing = false;
+var progressTimer = null;
+
+function loadTrack(i) {
+  trackIdx = (i + playlist.length) % playlist.length;
+  audio.src = playlist[trackIdx].src;
+  audio.load();
+  document.getElementById('player-title').textContent = playlist[trackIdx].title;
+  document.getElementById('timeNow').textContent = '0:00';
+  document.getElementById('timeEnd').textContent = '0:00';
+  document.getElementById('progressFill').style.width = '0%';
+}
+function fmtTime(s) {
+  if (!isFinite(s)) return '0:00';
+  var m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2,'0');
+}
+function updateProgress() {
+  if (!audio.duration) return;
+  document.getElementById('timeNow').textContent = fmtTime(audio.currentTime);
+  document.getElementById('timeEnd').textContent = fmtTime(audio.duration);
+  var pct = audio.currentTime / audio.duration * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+function startProgressLoop() {
+  stopProgressLoop();
+  progressTimer = setInterval(updateProgress, 500);
+}
+function stopProgressLoop() {
+  if(progressTimer) clearInterval(progressTimer);
+  progressTimer = null;
+}
+function togglePlay() {
+  var btn = document.getElementById('playBtn');
+  if(playing){
+    audio.pause(); playing=false;
+    btn.innerHTML='&#9654;';
+    stopProgressLoop();
+  }else{
+    audio.play().catch(function(){});
+    playing=true;
+    btn.innerHTML='&#9646;&#9646;';
+    startProgressLoop();
+  }
+}
+function prevTrack(){
+  loadTrack(trackIdx-1);
+  if(playing) audio.play().catch(function(){});
+}
+function nextTrack(){
+  loadTrack(trackIdx+1);
+  if(playing) audio.play().catch(function(){});
+}
+function setVolume(v){ audio.volume=v/100; }
+audio.addEventListener('ended', nextTrack);
+
+document.getElementById('progressBar').addEventListener('click', function(e){
+  if(!audio.duration)return;
+  var r=e.currentTarget.getBoundingClientRect();
+  var pct=(e.clientX-r.left)/r.width;
+  audio.currentTime=audio.duration*pct;
+});
+
+// ═══════════ Rain Audio ═══════════
+var rainAudio=document.getElementById('rain-audio');
+function setRainIntensity(v){ rainAudio.volume=v/100; }
+
+// ═══════════ Pomodoro Timer ═══════════
+var pomoDuration = 25 * 60;
+var pomoRemaining = pomoDuration;
+var pomoRunning = false;
+var pomoInterval = null;
+var pomoCount = 1;
+
+function updatePomodoroDisplay() {
+  var m = Math.floor(pomoRemaining / 60);
+  var s = pomoRemaining % 60;
+  document.getElementById('pomo-time').textContent =
+    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  var pct = Math.round((1 - pomoRemaining / pomoDuration) * 100);
+  document.getElementById('pomo-pct').textContent = pct + '%';
+  document.getElementById('pomo-fill').style.width = pct + '%';
+}
+
+function togglePomodoro() {
+  var btn = document.getElementById('pauseBtn');
+  if (pomoRunning) {
+    clearInterval(pomoInterval);
+    pomoInterval = null;
+    pomoRunning = false;
+    btn.innerHTML = '&#9654; 继续';
+    document.getElementById('pomo-badge').innerHTML = '&#9679; 已暂停';
+    document.getElementById('pomo-badge').style.color = 'rgba(200,180,130,0.5)';
+    document.getElementById('pomo-badge').style.borderColor = 'rgba(180,155,100,0.2)';
+  } else {
+    pomoRunning = true;
+    btn.innerHTML = '&#9208; 暂停';
+    document.getElementById('pomo-badge').innerHTML = '&#9679; 专注中';
+    document.getElementById('pomo-badge').style.color = 'rgba(160,200,160,0.6)';
+    document.getElementById('pomo-badge').style.borderColor = 'rgba(140,180,140,0.2)';
+    pomoInterval = setInterval(function() {
+      pomoRemaining--;
+      updatePomodoroDisplay();
+      if (pomoRemaining <= 0) {
+        clearInterval(pomoInterval);
+        pomoInterval = null;
+        pomoRunning = false;
+        pomoCount++;
+        document.getElementById('pomo-count').textContent = String(pomoCount).padStart(2,'0');
+        pomoRemaining = pomoDuration;
+        updatePomodoroDisplay();
+        btn.innerHTML = '&#9654; 开始';
+        document.getElementById('pomo-badge').innerHTML = '&#9679; 已完成';
+        document.getElementById('pomo-badge').style.color = 'rgba(180,200,220,0.6)';
+        document.getElementById('pomo-badge').style.borderColor = 'rgba(140,170,200,0.2)';
+      }
+    }, 1000);
+  }
+}
+
+function skipPomodoro() {
+  if (pomoInterval) { clearInterval(pomoInterval); pomoInterval = null; }
+  pomoRunning = false;
+  pomoCount++;
+  document.getElementById('pomo-count').textContent = String(pomoCount).padStart(2,'0');
+  pomoRemaining = pomoDuration;
+  updatePomodoroDisplay();
+  document.getElementById('pauseBtn').innerHTML = '&#9654; 开始';
+  document.getElementById('pomo-badge').innerHTML = '&#9679; 待开始';
+  document.getElementById('pomo-badge').style.color = 'rgba(180,170,130,0.4)';
+  document.getElementById('pomo-badge').style.borderColor = 'rgba(150,130,90,0.15)';
+}
+
+function resetPomodoro() {
+  if (pomoInterval) { clearInterval(pomoInterval); pomoInterval = null; }
+  pomoRunning = false;
+  pomoRemaining = pomoDuration;
+  updatePomodoroDisplay();
+  document.getElementById('pauseBtn').innerHTML = '&#9654; 开始';
+  document.getElementById('pomo-badge').innerHTML = '&#9679; 待开始';
+  document.getElementById('pomo-badge').style.color = 'rgba(180,170,130,0.4)';
+  document.getElementById('pomo-badge').style.borderColor = 'rgba(150,130,90,0.15)';
+}
+
+updatePomodoroDisplay();
+
+// ═══════════ UI Toggle (Clear Screen) ═══════════
+function toggleUI() {
+  document.body.classList.toggle('ui-hidden');
+}
+
+// ═══════════ Clock ═══════════
+function updateClock(){
+  var n=new Date();
+  document.getElementById('clock') &&
+    (document.getElementById('clock').textContent=
+      String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'));
+}
+
+// ═══════════ Sleep Timer ═══════════
+var timerInterval=null,timerRemaining=0;
+function setTimer(m){
+  document.querySelectorAll('.sleep-btn').forEach(function(b){b.classList.remove('on');});
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+  if(m===0){
+    document.getElementById('sleep-display').textContent='--:--';
+    document.getElementById('timer-display').textContent='';
+    return;
+  }
+  if(event && event.target) event.target.classList.add('on');
+  timerRemaining=m*60;
+  updateSleepDisplay();
+  timerInterval=setInterval(function(){
+    timerRemaining--;
+    updateSleepDisplay();
+    var mm=Math.floor(timerRemaining/60),ss=timerRemaining%60;
+    document.getElementById('timer-display').textContent=
+      'sleep in '+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+    if(timerRemaining<=0){clearInterval(timerInterval);timerInterval=null;fadeOut();}
+  },1000);
+}
+function updateSleepDisplay(){
+  var mm=Math.floor(timerRemaining/60),ss=timerRemaining%60;
+  document.getElementById('sleep-display').textContent =
+    String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+}
+function fadeOut(){
+  var origVol = audio.volume;
+  var origRainVol = rainAudio.volume;
+  var fadeSteps = 40;
+  var stepTime = 4000 / fadeSteps;
+  var volStep = origVol / fadeSteps;
+  var rainVolStep = origRainVol / fadeSteps;
+  var fadeI = 0;
+  var fadeInt = setInterval(function() {
+    fadeI++;
+    audio.volume = Math.max(0, origVol - volStep * fadeI);
+    rainAudio.volume = Math.max(0, origRainVol - rainVolStep * fadeI);
+    if (fadeI >= fadeSteps) { clearInterval(fadeInt); }
+  }, stepTime);
+  document.getElementById('bg').style.transition='filter 4s ease';
+  document.getElementById('bg').style.filter='brightness(0)';
+  document.getElementById('live2d-wrap').style.transition='opacity 4s ease';
+  document.getElementById('live2d-wrap').style.opacity='0';
+  setTimeout(function(){
+    audio.pause();
+    rainAudio.pause();
+    playing = false;
+    stopProgressLoop();
+    document.getElementById('playBtn').innerHTML='&#9654;';
+    document.getElementById('timer-display').textContent='...good night';
+    document.querySelectorAll('.sleep-btn').forEach(function(b){b.classList.remove('on');});
+    setTimeout(function(){
+      document.getElementById('bg').style.filter='';
+      document.getElementById('bg').style.transition='';
+      document.getElementById('live2d-wrap').style.opacity='0.7';
+      document.getElementById('live2d-wrap').style.transition='';
+      audio.volume = document.getElementById('volumeSlider').value / 100;
+      rainAudio.volume = document.getElementById('rainSlider').value / 100;
+    },3000);
+  },4500);
+}
+
+// ═══════ Main Loop ════════
+var rainSys=(function(){
+  var canvas=document.getElementById('rain-canvas');
+  if(!canvas){console.error('[rain] #rain-canvas not found');return null;}
+  var gl=canvas.getContext('webgl',{alpha:true,premultipliedAlpha:false});
+  if(!gl){console.warn('[rain] WebGL not available');return null;}
+  var W,H,prog,bgTex,drops=[],active=false,ready=false;
+  var MAX_DROPS=50,RATE=20,spawnAcc=0;
+  var uDrops,uRes,uBg,uRefr,uSpec;
+  var _blurAmt=0;
+
+  function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+    gl.viewport(0,0,W,H);
+  }
+  window.addEventListener('resize',resize);
+  resize();
+
+  var VSH='attribute vec2 ap;varying vec2 uv;void main(){uv=ap*vec2(.5,-.5)+.5;gl_Position=vec4(ap,0.,1.);}';
+
+  var FSH=
+    'precision highp float;\n'+
+    'varying vec2 uv;\n'+
+    'uniform sampler2D uBg;\n'+
+    'uniform vec4 uD[100];\n'+
+    'uniform float uRefr,uSpec;\n'+
+    'uniform vec2 uR;\n'+
+    '\n'+
+    'float rainStreak(vec2 p,float len){\n'+
+    '  p.y/=len;\n'+
+    '  float w=abs(p.x);\n'+
+    '  float core=smoothstep(.5,0.,w);\n'+
+    '  float edge=smoothstep(1.,.3,w)*.25;\n'+
+    '  float width=max(core,edge);\n'+
+    '  float ymask=smoothstep(-1.,-.3,p.y)*smoothstep(.7,.0,p.y);\n'+
+    '  float head=p.y<-.2?smoothstep(-.8,-.2,p.y):1.;\n'+
+    '  float tail=smoothstep(.9,.3,p.y);\n'+
+    '  return width*ymask*head*tail;\n'+
+    '}\n'+
+    '\n'+
+    'void main(){\n'+
+    '  vec2 tc=uv;\n'+
+    '  vec2 n=vec2(0.);\n'+
+    '  float mk=0.;\n'+
+    '  for(int i=0;i<100;i++){\n'+
+    '    vec4 d=uD[i];if(d.z<=0.)continue;\n'+
+    '    vec2 dc=vec2(d.x,d.y)/uR;\n'+
+    '    float rw=d.z/uR.x;\n'+
+    '    float streakLen=d.w/uR.y;\n'+
+    '    vec2 dd=(tc-dc)/vec2(rw,streakLen);\n'+
+    '    float dy=dd.y;\n'+
+    '    if(abs(dy)>1.1)continue;\n'+
+    '\n'+
+    '    float shape=rainStreak(dd,1.0);\n'+
+    '    if(shape<0.003)continue;\n'+
+    '\n'+
+    '    vec2 ndir=normalize(dc-tc+1e-4);\n'+
+    '    float bump=pow(shape,1.35);\n'+
+    '    n+=ndir*bump*(1.-abs(dy)*.3);\n'+
+    '    mk=max(mk,shape);\n'+
+    '  }\n'+
+    '  n*=uRefr;\n'+
+    '  vec4 col=texture2D(uBg,clamp(tc-n,0.,1.));\n'+
+    '  if(mk>0.004){\n'+
+    '    vec2 ld=normalize(vec2(.4,-.7));\n'+
+    '    float sp=max(0.,dot(normalize(n),ld));\n'+
+    '    sp=pow(sp,30.)*uSpec*mk;\n'+
+    '    col.rgb+=vec3(1.,1.02,1.06)*sp;\n'+
+    '    float fr=pow(1.-max(0.,dot(vec2(0.,1.),normalize(n))),2.1);\n'+
+    '    col.rgb=mix(col.rgb,vec3(.82,.88,.95),fr*.10*mk);\n'+
+    '    col.rgb-=pow(mk,.62)*.055;\n'+
+    '  }\n'+
+    '  gl_FragColor=col;\n'+
+    '}';
+
+  function cs(t,s){
+    var sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);
+    if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(sh));return null;}
+    return sh;
+  }
+  function init(){
+    var vs=cs(gl.VERTEX_SHADER,VSH),fs=cs(gl.FRAGMENT_SHADER,FSH);
+    if(!vs||!fs)return false;
+    prog=gl.createProgram();gl.attachShader(prog,vs);gl.attachShader(prog,fs);gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){console.error(gl.getProgramInfoLog(prog));return false;}
+    gl.useProgram(prog);
+    var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+    var al=gl.getAttribLocation(prog,'ap');gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);
+    uDrops=gl.getUniformLocation(prog,'uD');
+    uRes=gl.getUniformLocation(prog,'uR');
+    uBg=gl.getUniformLocation(prog,'uBg');
+    uRefr=gl.getUniformLocation(prog,'uRefr');
+    uSpec=gl.getUniformLocation(prog,'uSpec');
+    bgTex=gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D,bgTex);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    gl.clearColor(0,0,0,0);
+    return true;
+  }
+
+  function loadBg(url,blurPx){
+    if(!prog)return;
+    _blurAmt=blurPx||0;
+    var img=new Image();
+    img.crossOrigin='anonymous';
+    img.onload=function(){
+      var src=img;
+      if(_blurAmt>0.5){
+        var c=document.createElement('canvas');
+        c.width=img.naturalWidth;c.height=img.naturalHeight;
+        var cx=c.getContext('2d');
+        cx.filter='blur('+_blurAmt+'px)';
+        cx.drawImage(img,0,0);
+        src=c;
+      }
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D,bgTex);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,src);
+      ready=true;
+    };
+    img.onerror=function(){
+      var c=document.createElement('canvas');c.width=W||1920;c.height=H||1080;
+      var cx=c.getContext('2d');cx.fillStyle='#1a1520';cx.fillRect(0,0,c.width,c.height);
+      gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,bgTex);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,c);
+      ready=true;
+    };
+    img.src=url;
+  }
+
+  function ensureTex(){
+    if(ready)return;
+    var c=document.createElement('canvas');c.width=Math.max(W,100);c.height=Math.max(H,100);
+    var cx=c.getContext('2d');cx.fillStyle='#1a1520';cx.fillRect(0,0,c.width,c.height);
+    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,bgTex);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,c);
+    ready=true;
+  }
+
+  function rnd(a,b){return Math.random()*(b-a)+a;}
+  function spawn(){
+    return{
+      x:rnd(0,W),y:rnd(-80,-5),
+      r:rnd(3,8),
+      len:rnd(80,250),
+      spd:rnd(150,300),
+      life:rnd(1.5,3),age:0
+    };
+  }
+
+  if(!init()){console.error('[rain] init() FAILED');return null;}
+
+  return{
+    active:false,
+    setBg:function(url,blurPx){loadBg(url,blurPx);},
+    toggle:function(on){
+      active=!!on;
+      canvas.classList.toggle('active',on);
+      if(on){
+        drops=[];spawnAcc=0;
+        var cfg=sceneConfigs[selectedScene];
+        var blurVal=parseFloat(document.getElementById('blurSlider').value)||15;
+        if(cfg&&cfg.bgMain)loadBg(cfg.bgMain,blurVal*0.3);
+      }else{drops=[];}
+    },
+    update:function(dt){
+      if(!active)return;
+      spawnAcc+=RATE*dt;
+      while(spawnAcc>=1&&drops.length<MAX_DROPS){drops.push(spawn());spawnAcc-=1;}
+      for(var i=drops.length-1;i>=0;i--){
+        var d=drops[i];
+        d.age+=dt;
+        d.y+=d.spd*dt*(1+d.age*0.25);
+        d.x+=(Math.random()-0.5)*0.4*dt*60;
+        if(d.y>H+30||d.age>d.life)drops.splice(i,1);
+      }
+    },
+    draw:function(){
+      if(!active||!prog)return;
+      ensureTex();
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(prog);
+      var da=new Float32Array(400);
+      for(var i=0;i<100;i++){
+        if(i<drops.length){
+          var d=drops[i];
+          var grow=Math.min(d.age/d.life,1);
+          var sr=d.r*(0.5+grow*0.7);
+          da[i*4]=d.x;da[i*4+1]=d.y;da[i*4+2]=sr;da[i*4+3]=d.len;
+        }else{
+          da[i*4+2]=-1;
+        }
+      }
+      gl.uniform4fv(uDrops,da);
+      gl.uniform2f(uRes,W,H);
+      gl.uniform1i(uBg,0);
+      gl.uniform1f(uRefr,.045);
+      gl.uniform1f(uSpec,.60);
+      gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    }
+  };
+})();
+
+var _animLast=0;
+function animate(ts){
+  requestAnimationFrame(animate);
+  var dt=_animLast?Math.min((ts-_animLast)/1000,0.05):0;
+  _animLast=ts||0;
+  if(rainSys)rainSys.update(dt);
+  if(rainSys)rainSys.draw();
+}
+
+// ═══════════ SETUP PAGE ═══════════
+function showSetup(){
+  document.getElementById('entry').classList.add('hidden');
+  document.getElementById('setup').classList.add('visible');
+}
+
+var selectedScene = '1';
+var sceneConfigs = {
+  '1': {
+    name: '深夜鼓房',
+    bgMain: 'bg_main.png',
+    bgDepth: 'bg_depth.png',
+    thumb: 'bg_main.png',
+    ambient: 'rain.mp3',
+    playlist: [
+      { title: '卢广仲 - 我爱你', src: 'music/卢广仲 - 我爱你.mp3' },
+      { title: '小精灵 - 恋是爱的呕吐物', src: 'music/小精灵 - 恋是爱的呕吐物.mp3' },
+      { title: '蛋堡 - 关于小熊', src: 'music/蛋堡 - 关于小熊.mp3' }
+    ]
+  },
+  '2': {
+    name: '雨天咖啡店',
+    bgMain: 'bg_scene2.jpg',
+    bgDepth: 'bg_depth_scene2.png',
+    thumb: 'bg_scene2.jpg',
+    ambient: 'bg_music/2.mp3',
+    playlist: [
+      { title: '卢广仲 - 我爱你', src: 'music/卢广仲 - 我爱你.mp3' },
+      { title: '小精灵 - 恋是爱的呕吐物', src: 'music/小精灵 - 恋是爱的呕吐物.mp3' },
+      { title: '蛋堡 - 关于小熊', src: 'music/蛋堡 - 关于小熊.mp3' }
+    ]
+  },
+  '3': {
+    name: '深夜图书馆',
+    bgMain: 'bg_scene3.jpg',
+    bgDepth: 'bg_depth_scene3.png',
+    thumb: 'bg_scene3.jpg',
+    ambient: 'bg_music/3.mp3',
+    playlist: [
+      { title: '卢广仲 - 我爱你', src: 'music/卢广仲 - 我爱你.mp3' },
+      { title: '小精灵 - 恋是爱的呕吐物', src: 'music/小精灵 - 恋是爱的呕吐物.mp3' },
+      { title: '蛋堡 - 关于小熊', src: 'music/蛋堡 - 关于小熊.mp3' }
+    ]
+  },
+  '4': {
+    name: '海边书房',
+    bgMain: 'bg_scene4.jpg',
+    bgDepth: 'bg_depth_scene4.png',
+    thumb: 'bg_scene4.jpg',
+    ambient: 'bg_music/4.mp3',
+    playlist: [
+      { title: '卢广仲 - 我爱你', src: 'music/卢广仲 - 我爱你.mp3' },
+      { title: '小精灵 - 恋是爱的呕吐物', src: 'music/小精灵 - 恋是爱的呕吐物.mp3' },
+      { title: '蛋堡 - 关于小熊', src: 'music/蛋堡 - 关于小熊.mp3' }
+    ]
+  }
+};
+
+function selectScene(el){
+  document.querySelectorAll('.scene-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedScene = el.dataset.scene;
+  var cfg = sceneConfigs[selectedScene];
+  if(cfg){
+    playlist = cfg.playlist;
+    var wasPlaying = !rainAudio.paused && rainAudio.currentTime > 0;
+    var prevVol = rainAudio.volume;
+    rainAudio.src = cfg.ambient;
+    rainAudio.load();
+    if(wasPlaying) rainAudio.play().catch(function(){});
+    rainAudio.volume = prevVol;
+    if(!playing) loadTrack(0);
+  }
+}
+
+function selectPomoDur(el, minutes){
+  document.querySelectorAll('.pomo-dur-btn').forEach(function(b){ b.classList.remove('selected'); });
+  el.classList.add('selected');
+  pomoDuration = minutes * 60;
+  if(!pomoRunning){
+    pomoRemaining = pomoDuration;
+    updatePomodoroDisplay();
+  }
+}
+
+function enterRoom(){
+  document.getElementById('setup').classList.remove('visible');
+  setTimeout(function(){
+    document.getElementById('setup').style.display = 'none';
+  }, 600);
+  var cfg = sceneConfigs[selectedScene];
+  if(cfg){
+    if(cfg.bgMain)document.getElementById('bg-main').style.backgroundImage = "url('" + cfg.bgMain + "')";
+    if(cfg.bgDepth)document.getElementById('bg-depth').style.backgroundImage = "url('" + cfg.bgDepth + "')";
+    if(cfg.ambient){
+      rainAudio.src = cfg.ambient;
+      rainAudio.load();
+    }
+  }
+  rainAudio.play().catch(function(){});
+  initLive2DDrag();
+  updateClock();setInterval(updateClock,10000);
+  loadTrack(0);
+  setBgBlur(document.getElementById('blurSlider').value);
+  requestAnimationFrame(animate);
+  if(rainSys)rainSys.toggle(true);
+}
+
+// ═══════════ Init ═══════════
+window.addEventListener('DOMContentLoaded', function() {
+  initLive2d();
+  var gi = document.getElementById('goalInput');
+  var gd = document.getElementById('goal-display');
+  var gdt = document.getElementById('goal-display-text');
+  var gh = document.getElementById('goal-history');
+  var goalHistory = [];
+  gi.addEventListener('keydown', function(e) {
+    if(e.key === 'Enter' && this.value.trim()) {
+      gdt.textContent = this.value.trim();
+      gd.classList.add('visible');
+    }
+  });
+  gd.addEventListener('click', function() {
+    gd.classList.remove('visible');
+    var txt = gdt.textContent;
+    if(!txt) return;
+    var now = new Date();
+    var hh = String(now.getHours()).padStart(2,'0');
+    var mm = String(now.getMinutes()).padStart(2,'0');
+    goalHistory.unshift({ text: txt, time: hh + ':' + mm });
+    if(goalHistory.length > 5) goalHistory.pop();
+    renderGoalHistory();
+    gdt.textContent = '';
+    gi.value = '';
+  });
+  function renderGoalHistory() {
+    gh.innerHTML = '';
+    for(var i = 0; i < goalHistory.length; i++) {
+      var item = goalHistory[i];
+      var el = document.createElement('div');
+      el.className = 'goal-history-item';
+      el.style.opacity = 0.7 - i * 0.12;
+      el.innerHTML = '<div class="goal-hist-text">' + escapeHtml(item.text) + '</div><div class="goal-hist-time">' + item.time + '</div>';
+      gh.appendChild(el);
+    }
+  }
+  function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+});
+</script>
+</body>
+</html>

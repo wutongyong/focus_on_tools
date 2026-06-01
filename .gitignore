@@ -1,0 +1,9 @@
+node_modules/
+repkg_tool/
+output/
+start_bg/extracted/
+start_bg/extracted_full/
+*.pkg
+.DS_Store
+Thumbs.db
+desktop.ini
