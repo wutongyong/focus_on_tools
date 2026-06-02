@@ -13,6 +13,42 @@
     user-select: none;
   }
 
+  /* ═══ 全局 UI 缩放（zoom 方案）═══ */
+  /* 只对进入页+配置页生效，固定 1920x1080 基准尺寸 */
+  #ui-wrap {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 1920px; height: 1080px;
+    z-index: 90;
+    overflow: hidden;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+  }
+  #ui-wrap > * { pointer-events: auto; }
+  /* entry/setup 用 fixed → absolute 避免定位失效 */
+  #ui-wrap > #entry,
+  #ui-wrap > #setup,
+  #ui-wrap > #loading {
+    position: absolute !important;
+    inset: 0 !important;
+  }
+
+  /* ═══ 调试：实时显示 scale 值 ═══ */
+  #scale-debug {
+    position: absolute;
+    bottom: 8px; right: 8px;
+    z-index: 9999;
+    background: rgba(0,0,0,0.7);
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
   /* Entry */
   #entry {
     position: fixed; inset: 0; z-index: 100;
@@ -20,9 +56,28 @@
     align-items: center; justify-content: center;
     background: url('start_bg.png') center/cover no-repeat;
     background-color: #0e0d16;
-    transition: opacity 1s ease, visibility 1s;
+    transition: opacity 1.2s cubic-bezier(.4,0,.2,1),
+                visibility 1.2s,
+                transform 1.2s cubic-bezier(.4,0,.2,1);
+    transform-origin: center center;
   }
-  #entry.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  #entry.hidden {
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transform: scale(1.06);
+  }
+  /* Entry 内部元素退出动画 */
+  #entry.hidden .entry-tagline,
+  #entry.hidden h1,
+  #entry.hidden .entry-subtitle,
+  #entry.hidden .enter-btn {
+    animation: entryExit 0.6s cubic-bezier(.4,0,.2,1) forwards;
+  }
+  #entry.hidden h1 { animation-delay: 0.05s; }
+  #entry.hidden .entry-subtitle { animation-delay: 0.1s; }
+  #entry.hidden .enter-btn { animation-delay: 0.15s; }
+  @keyframes entryExit {
+    to { opacity: 0; transform: translateY(-20px) scale(0.96); filter: blur(4px); }
+  }
   #entry .entry-tagline {
     font-size: clamp(0.6rem, 0.85vw, 0.82rem);
     color: rgba(200,180,145,0.35);
@@ -206,18 +261,46 @@
     gap: clamp(14px, 1.8vh, 22px);
     max-width: clamp(280px, 30vw, 380px);
     width: auto;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: opacity 0.5s ease, margin-left 0.5s ease;
   }
-  #left-panel.mode-hidden { opacity: 0; pointer-events: none; transform: translateX(-24px); }
+  #left-panel.mode-hidden { opacity: 0; pointer-events: none; margin-left: -24px; }
 
   /* ── Pomodoro Card ── */
   .pomodoro-card {
     background: rgba(12,10,7,0.55);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(170,135,65,0.13);
-    border-radius: clamp(14px, 1.8vw, 22px);
-    padding: clamp(18px, 2.6vh, 32px) clamp(22px, 3vw, 36px);
-    min-width: clamp(240px, 26vw, 340px);
+    border-radius: clamp(16px, 2vw, 26px);
+    padding: clamp(24px, 3.2vh, 40px) clamp(28px, 3.5vw, 44px);
+    min-width: clamp(280px, 30vw, 400px);
+    transition: all 0.6s cubic-bezier(.4,0,.2,1);
+    position: relative;
+    z-index: 22;
+  }
+  /* 番茄钟启动时：脱离面板，居中放大 */
+  .pomodoro-card.active {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    min-width: clamp(420px, 46vw, 640px);
+    padding: clamp(44px, 6vh, 68px) clamp(52px, 6.5vw, 78px);
+    z-index: 50;
+    background: rgba(12,10,7,0.72);
+    border-color: rgba(190,155,70,0.22);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.45), 0 0 120px rgba(180,140,60,0.06);
+  }
+  .pomodoro-card.active .pomodoro-time {
+    font-size: clamp(5.2rem, 12vw, 11rem);
+  }
+  .pomodoro-card.active .pomodoro-header {
+    margin-bottom: clamp(22px, 3vh, 34px);
+  }
+  .pomodoro-card.active .pomodoro-progress-bar {
+    height: clamp(8px, 1vh, 10px);
+  }
+  .pomodoro-card.active .pomo-btn {
+    padding: clamp(14px, 1.8vh, 20px) 0;
+    font-size: clamp(0.88rem, 1.15vw, 1.2rem);
   }
   .pomodoro-header {
     display: flex; align-items: center;
@@ -239,13 +322,14 @@
     letter-spacing: 0.04em;
   }
   .pomodoro-time {
-    font-size: clamp(2.6rem, 5.2vw, 4.8rem);
+    font-size: clamp(3.2rem, 6.5vw, 5.6rem);
     font-weight: 300;
     color: rgba(230,215,185,0.88);
     letter-spacing: 0.03em;
     line-height: 1;
     margin-bottom: clamp(12px, 1.6vh, 18px);
     font-variant-numeric: tabular-nums;
+    transition: font-size 0.6s cubic-bezier(.4,0,.2,1);
   }
   .pomodoro-progress-wrap {
     display: flex; align-items: center;
@@ -551,9 +635,9 @@
     gap: clamp(12px, 1.6vh, 18px);
     max-width: clamp(280px, 30vw, 380px);
     width: auto;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: opacity 0.5s ease, margin-left 0.5s ease;
   }
-  #right-panel.mode-hidden { opacity: 0; pointer-events: none; transform: translateX(24px); }
+  #right-panel.mode-hidden { opacity: 0; pointer-events: none; margin-left: 24px; }
 
   .sleep-card {
     background: rgba(12,10,7,0.55);
@@ -635,15 +719,69 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(7,7,13,0.92);
+    background: rgba(7,7,13,0.6);
     backdrop-filter: blur(30px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.6s ease, visibility 0.6s;
+    transition: opacity 0.8s cubic-bezier(.4,0,.2,1), visibility 0.8s;
     padding: clamp(20px, 3vh, 40px) clamp(16px, 2.5vw, 36px);
   }
   #setup.visible { opacity: 1; visibility: visible; pointer-events: auto; }
+
+  /* Setup 页面背景：当前选中场景的高糊版 */
+  #setup-bg {
+    position: absolute; inset: -40px;
+    background-size: cover;
+    background-position: center;
+    filter: blur(40px) brightness(0.55) saturate(0.75);
+    transition: background-image 1s ease;
+    z-index: -1;
+  }
+
+  /* Setup 入场动画 - 子元素依次展开 */
+  #setup.visible .setup-step-label { animation: setupSlideUp 0.6s cubic-bezier(.2,.8,.2,1) 0.15s both; }
+  #setup.visible .setup-section-title { animation: setupSlideUp 0.65s cubic-bezier(.2,.8,.2,1) 0.25s both; }
+  #setup.visible .scene-card { animation: setupCardIn 0.55s cubic-bezier(.2,.8,.2,1) both; }
+  #setup.visible .scene-card:nth-child(1) { animation-delay: 0.3s; }
+  #setup.visible .scene-card:nth-child(2) { animation-delay: 0.4s; }
+  #setup.visible .scene-card:nth-child(3) { animation-delay: 0.5s; }
+  #setup.visible .scene-card:nth-child(4) { animation-delay: 0.6s; }
+  #setup.visible .setup-panel { animation: setupFadeIn 0.5s ease 0.7s both; }
+  #setup.visible .setup-panel:nth-of-type(2) { animation-delay: 0.85s; }
+  #setup.visible .setup-enter-btn { animation: setupBtnRise 0.5s cubic-bezier(.2,.8,.2,1) 1s both; }
+
+  @keyframes setupSlideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes setupCardIn {
+    from { opacity: 0; transform: translateY(28px) scale(0.94); filter: blur(6px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+  @keyframes setupFadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes setupBtnRise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes panelCardIn {
+    from { opacity: 0.5; transform: translateY(8px) scale(0.98); filter: blur(2px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+
+  /* Setup 退场动画 */
+  #setup.exit-anim {
+    animation: setupExit 0.7s cubic-bezier(.4,0,.2,1) forwards;
+    pointer-events: none;
+  }
+  @keyframes setupExit {
+    0% { opacity: 1; transform: scale(1); filter: blur(0); }
+    100% { opacity: 0; transform: scale(1.03); filter: blur(12px); }
+  }
   .setup-grid {
     display: flex;
     gap: clamp(16px, 2.5vw, 36px);
@@ -862,9 +1000,57 @@
   body.ui-hidden #bottom-dock,
   body.ui-hidden #timer-display,
   body.ui-hidden #setup { opacity: 0 !important; pointer-events: none !important; }
+
+  /* ═══════════ ROOM ENTRANCE ANIMATIONS ═══════════ */
+  /* 初始隐藏，等 enterRoom 触发后依次入场 */
+  body.room-entering #topbar { animation: roomSlideDown 0.7s cubic-bezier(.2,.8,.2,1) 0.3s both; }
+  body.room-entering #left-panel { animation: roomSlideRight 0.7s cubic-bezier(.2,.8,.2,1) 0.5s both; }
+  body.room-entering #right-panel { animation: roomSlideLeft 0.7s cubic-bezier(.2,.8,.2,1) 0.55s both; }
+  body.room-entering #bottom-dock { animation: roomSlideUp 0.65s cubic-bezier(.2,.8,.2,1) 0.7s both; }
+  body.room-entering #vignette { animation: vignetteIn 1.2s ease 0.1s both; }
+  body.room-entering #rain-canvas.active { animation: rainFadeIn 1.5s ease 0.6s both; }
+
+  @keyframes roomSlideDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes roomSlideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes roomSlideRight {
+    from { opacity: 0; transform: translateX(-28px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes roomSlideLeft {
+    from { opacity: 0; transform: translateX(28px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes vignetteIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes rainFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ═══════════ SCENE CROSS-FADE ═══════════ */
+  #bg-main, #bg-depth {
+    will-change: background-image, filter;
+  }
+  .scene-crossfade {
+    animation: sceneCrossFade 1s cubic-bezier(.4,0,.2,1) !important;
+  }
+  @keyframes sceneCrossFade {
+    0% { opacity: 0.3; filter: blur(8px) brightness(1.3); transform: scale(1.02); }
+    100% { opacity: 1; filter: blur(0) brightness(1); transform: scale(1); }
+  }
 </style>
 </head>
 <body>
+<div id="ui-wrap">
+<div id="scale-debug"></div>
 <div id="loading"><span>loading...</span></div>
 
 <div id="entry">
@@ -876,6 +1062,7 @@
 
 <!-- Setup Page -->
 <div id="setup">
+  <div id="setup-bg"></div>
   <div class="setup-grid">
     <!-- Left: Scene Selection -->
     <div class="setup-left">
@@ -964,8 +1151,9 @@
     </div>
   </div>
 </div>
+</div><!-- /ui-wrap: 只包含 entry + setup -->
 
-<!-- Background -->
+<!-- Background（不参与 UI 缩放） -->
 <div id="bg"><div id="bg-main"></div><div id="bg-depth"></div></div>
 <div id="live2d-wrap" class="hidden"><canvas id="live2d-canvas"></canvas></div>
 <audio id="rain-audio" src="rain.mp3" loop preload="auto"></audio>
@@ -1077,13 +1265,14 @@
       </div>
       <div class="dock-slider-group">
         <span class="dock-slider-label">模糊</span>
-        <input type="range" class="dock-slider" id="blurSlider" min="0" max="100" value="15" oninput="setBgBlur(this.value)">
+        <input type="range" class="dock-slider" id="blurSlider" min="0" max="100" value="8" oninput="setBgBlur(this.value)">
       </div>
     </div>
 
     <!-- Tools -->
     <div class="dock-tools">
       <button class="dock-tool-btn" onclick="toggleLive2D()">&#128065; 角色</button>
+      <button class="dock-tool-btn" id="rainToggleBtn" onclick="toggleRain()">&#127783; 无雨</button>
     </div>
   </div>
 </div>
@@ -1108,6 +1297,12 @@ function switchMode(mode, el) {
   var sc = document.querySelector('.sleep-card');
   var gc = document.querySelector('.goal-card');
   var gh = document.getElementById('goal-history');
+
+  /* 面板内卡片微动画：每次切换时重新触发 */
+  var cards = lp ? lp.querySelectorAll('.pomodoro-card,.goal-card') : [];
+  var rcards = rp ? rp.querySelectorAll('.sleep-card,.goal-card,.goal-history-item') : [];
+  cards.forEach(function(c,i){ if(!c.classList.contains('active')){ c.style.animation='none'; c.offsetHeight; c.style.animation='panelCardIn 0.4s cubic-bezier(.2,.8,.2,1) '+ (i*0.08) +'s both'; } });
+  rcards.forEach(function(c,i){ c.style.animation='none'; c.offsetHeight; c.style.animation='panelCardIn 0.4s cubic-bezier(.2,.8,.2,1) '+ (i*0.08) +'s both'; });
 
   if(mode === 'timer') {
     lp.classList.remove('mode-hidden');
@@ -1261,6 +1456,22 @@ function toggleLive2D() {
   }
 }
 
+var rainEnabled = false;
+function toggleRain() {
+  rainEnabled = !rainEnabled;
+  var canvas = document.getElementById('rain-canvas');
+  var btn = document.getElementById('rainToggleBtn');
+  if(rainEnabled) {
+    canvas.classList.add('active');
+    btn.innerHTML = '&#127783; 雨效';
+    if(rainSys) rainSys.toggle(true);
+  } else {
+    canvas.classList.remove('active');
+    btn.innerHTML = '&#127783; 无雨';
+    if(rainSys) rainSys.toggle(false);
+  }
+}
+
 // ═══════════ Background Blur Slider ═══════════
 function setBgBlur(v) {
   var px = v * 0.3;
@@ -1283,11 +1494,109 @@ document.addEventListener('mousemove', function(e) {
 });
 
 // ═══════════ Music Player ═══════════
-var playlist = [
+/* 自动扫描 music/ 文件夹，支持 HTTP 服务器环境 */
+var playlist = [];
+var DEFAULT_PLAYLIST = [
   { title: '卢广仲 - 我爱你', src: 'music/卢广仲 - 我爱你.mp3' },
   { title: '小精灵 - 恋是爱的呕吐物', src: 'music/小精灵 - 恋是爱的呕吐物.mp3' },
   { title: '蛋堡 - 关于小熊', src: 'music/蛋堡 - 关于小熊.mp3' }
 ];
+/* 支持的音频扩展名 */
+var AUDIO_EXTS = ['.mp3','.flac','.wav','.ogg','.m4a','.aac'];
+
+function scanMusicFolder() {
+  /* 先尝试用 fetch 探测编号文件（01~50） */
+  var promises = [];
+  for(var i = 1; i <= 50; i++) {
+    var num = String(i).padStart(2, '0');
+    (function(n){
+      promises.push(
+        fetch('music/' + n + '.mp3', { method: 'HEAD' }).then(function(r){
+          if(r.ok) return { title: n, src: 'music/' + n + '.mp3' };
+          return null;
+        }).catch(function(){ return null; })
+      );
+    })(i);
+  }
+  Promise.all(promises).then(function(results){
+    var found = results.filter(Boolean);
+    if(found.length > 0) {
+      playlist = found;
+    } else {
+      /* 编号文件没找到，尝试读取目录索引（需要服务器支持） */
+      fetch('music/').then(function(r){ return r.text(); }).then(function(html){
+        var parsed = parseDirListing(html, 'music/');
+        if(parsed.length > 0) playlist = parsed;
+        else playlist = DEFAULT_PLAYLIST.slice();
+        finishScan();
+      }).catch(function(){
+        playlist = DEFAULT_PLAYLIST.slice();
+        finishScan();
+      });
+    }
+  }).catch(function(){
+    playlist = DEFAULT_PLAYLIST.slice();
+    finishScan();
+  });
+}
+
+/* 从 HTML 目录列表中解析文件名 */
+function parseDirListing(html, prefix) {
+  var files = [];
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  var links = tmp.querySelectorAll('a[href]');
+  links.forEach(function(a){
+    var href = a.getAttribute('href') || '';
+    var name = decodeURIComponent(href.split('/').pop());
+    if(AUDIO_EXTS.some(function(e){ return name.toLowerCase().endsWith(e); })) {
+      files.push({ title: name.replace(/\.[^.]+$/,''), src: prefix + name });
+    }
+  });
+  return files;
+}
+
+function finishScan() {
+  /* 同步更新所有场景配置的播放列表 */
+  for(var k in sceneConfigs) {
+    sceneConfigs[k].playlist = playlist;
+  }
+  if(!playing && playlist.length > 0) loadTrack(0);
+}
+
+/* 自动扫描 bg_music/ 文件夹，用于场景背景音 */
+function scanBGMusicFolder() {
+  var promises = [];
+  for(var i = 1; i <= 20; i++) {
+    (function(n){
+      promises.push(
+        fetch('bg_music/' + n + '.mp3', { method: 'HEAD' }).then(function(r){
+          if(r.ok) return 'bg_music/' + n + '.mp3';
+          return null;
+        }).catch(function(){ return null; })
+      );
+    })(i);
+  }
+  Promise.all(promises).then(function(results){
+    var found = results.filter(Boolean);
+    if(found.length > 0) {
+      for(var j = 0; j < found.length; j++) {
+        var sceneId = String(j + 1);
+        if(sceneConfigs[sceneId]) {
+          sceneConfigs[sceneId].ambient = found[j];
+        }
+      }
+      /* 只在找到新文件且当前场景匹配时才更新 */
+      var cfg = sceneConfigs[selectedScene];
+      if(cfg && found.indexOf(cfg.ambient) !== -1 && !rainAudio.paused) {
+        /* 已在播放中，不中断，下次切场景时生效 */
+      } else if(cfg && cfg.ambient) {
+        rainAudio.src = cfg.ambient;
+        rainAudio.load();
+      }
+    }
+  }).catch(function(){});
+}
 var trackIdx = 0;
 var audio = new Audio();
 audio.volume = 0.6;
@@ -1378,6 +1687,7 @@ function updatePomodoroDisplay() {
 
 function togglePomodoro() {
   var btn = document.getElementById('pauseBtn');
+  var card = document.querySelector('.pomodoro-card');
   if (pomoRunning) {
     clearInterval(pomoInterval);
     pomoInterval = null;
@@ -1386,12 +1696,25 @@ function togglePomodoro() {
     document.getElementById('pomo-badge').innerHTML = '&#9679; 已暂停';
     document.getElementById('pomo-badge').style.color = 'rgba(200,180,130,0.5)';
     document.getElementById('pomo-badge').style.borderColor = 'rgba(180,155,100,0.2)';
+    /* 暂停时 FLIP 飞回原位 */
+    if(card && card.classList.contains('active')){
+      var lastRect = card.getBoundingClientRect();
+      card.classList.remove('active');
+      var firstRect = card.getBoundingClientRect();
+      applyPomoFlip(card, firstRect, true);
+    }
   } else {
     pomoRunning = true;
     btn.innerHTML = '&#9208; 暂停';
     document.getElementById('pomo-badge').innerHTML = '&#9679; 专注中';
     document.getElementById('pomo-badge').style.color = 'rgba(160,200,160,0.6)';
     document.getElementById('pomo-badge').style.borderColor = 'rgba(140,180,140,0.2)';
+    /* 启动时 FLIP 居中放大 */
+    if(card){
+      var firstRect = card.getBoundingClientRect();
+      card.classList.add('active');
+      applyPomoFlip(card, firstRect, false);
+    }
     pomoInterval = setInterval(function() {
       pomoRemaining--;
       updatePomodoroDisplay();
@@ -1407,8 +1730,60 @@ function togglePomodoro() {
         document.getElementById('pomo-badge').innerHTML = '&#9679; 已完成';
         document.getElementById('pomo-badge').style.color = 'rgba(180,200,220,0.6)';
         document.getElementById('pomo-badge').style.borderColor = 'rgba(140,170,200,0.2)';
+        /* 完成时 FLIP 回原位 */
+        if(card && card.classList.contains('active')){
+          var lr = card.getBoundingClientRect();
+          card.classList.remove('active');
+          var fr = card.getBoundingClientRect();
+          applyPomoFlip(card, fr, true);
+        }
       }
     }, 1000);
+  }
+}
+
+/* 番茄钟 FLIP 动画辅助函数
+ * fromRect: 起始位置的 getBoundingClientRect
+ * reverse:  true=从 active 飞回面板 / false=从面板飞到居中
+ *
+ * 关键：CSS .active 用 transform:translate(-50%,-50%) 居中。
+ * FLIP 的 style.transform 会覆盖它，但动画结束后清除 style.transform，
+ * CSS 居中自动恢复。FLIP 只需保证起始帧视觉位置不变即可。
+ */
+function applyPomoFlip(card, fromRect, reverse) {
+  /* 清除 switchMode 设置的 panelCardIn 动画，避免与 FLIP transition 冲突 */
+  card.style.animation = 'none';
+
+  if(!reverse) {
+    /* 飞向居中：add active 后 CSS 会把它放到居中位置 */
+    var toRect = card.getBoundingClientRect();
+    var dx = fromRect.left - toRect.left + (fromRect.width - toRect.width) / 2;
+    var dy = fromRect.top - toRect.top + (fromRect.height - toRect.height) / 2;
+    var ds = fromRect.width / Math.max(1, toRect.width);
+    card.style.transform = 'translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale('+ds.toFixed(3)+')';
+    card.style.transition = 'none';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        card.style.transition = '';
+        card.style.transform = '';
+      });
+    });
+  } else {
+    /* 飞回面板：先记录居中位置，再 remove active */
+    var toRect = card.getBoundingClientRect();
+    var dx = fromRect.left - toRect.left + (fromRect.width - toRect.width) / 2;
+    var dy = fromRect.top - toRect.top + (fromRect.height - toRect.height) / 2;
+    var ds = fromRect.width / Math.max(1, toRect.width);
+    card.style.transform = 'translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale('+ds.toFixed(3)+')';
+    card.style.transition = 'none';
+    card.style.left = '';
+    card.style.top = '';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        card.style.transition = '';
+        card.style.transform = '';
+      });
+    });
   }
 }
 
@@ -1423,6 +1798,13 @@ function skipPomodoro() {
   document.getElementById('pomo-badge').innerHTML = '&#9679; 待开始';
   document.getElementById('pomo-badge').style.color = 'rgba(180,170,130,0.4)';
   document.getElementById('pomo-badge').style.borderColor = 'rgba(150,130,90,0.15)';
+  var card = document.querySelector('.pomodoro-card');
+  if(card && card.classList.contains('active')){
+    var lr = card.getBoundingClientRect();
+    card.classList.remove('active');
+    var fr = card.getBoundingClientRect();
+    applyPomoFlip(card, lr, true);
+  }
 }
 
 function resetPomodoro() {
@@ -1434,6 +1816,13 @@ function resetPomodoro() {
   document.getElementById('pomo-badge').innerHTML = '&#9679; 待开始';
   document.getElementById('pomo-badge').style.color = 'rgba(180,170,130,0.4)';
   document.getElementById('pomo-badge').style.borderColor = 'rgba(150,130,90,0.15)';
+  var card = document.querySelector('.pomodoro-card');
+  if(card && card.classList.contains('active')){
+    var lr = card.getBoundingClientRect();
+    card.classList.remove('active');
+    var fr = card.getBoundingClientRect();
+    applyPomoFlip(card, lr, true);
+  }
 }
 
 updatePomodoroDisplay();
@@ -1665,7 +2054,7 @@ var rainSys=(function(){
   function spawn(){
     return{
       x:rnd(0,W),y:rnd(-80,-5),
-      r:rnd(3,8),
+      r:rnd(5,14),
       len:rnd(80,250),
       spd:rnd(150,300),
       life:rnd(1.5,3),age:0
@@ -1738,6 +2127,12 @@ function animate(ts){
 function showSetup(){
   document.getElementById('entry').classList.add('hidden');
   document.getElementById('setup').classList.add('visible');
+  /* 设置初始背景为默认场景 */
+  var cfg = sceneConfigs[selectedScene];
+  var setupBg = document.getElementById('setup-bg');
+  if(setupBg && cfg && cfg.bgMain) {
+    setupBg.style.backgroundImage = "url('" + cfg.bgMain + "')";
+  }
 }
 
 var selectedScene = '1';
@@ -1799,6 +2194,11 @@ function selectScene(el){
   var cfg = sceneConfigs[selectedScene];
   if(cfg){
     playlist = cfg.playlist;
+    /* 切换 Setup 页面背景为当前场景高糊版 */
+    var setupBg = document.getElementById('setup-bg');
+    if(setupBg && cfg.bgMain) {
+      setupBg.style.backgroundImage = "url('" + cfg.bgMain + "')";
+    }
     var wasPlaying = !rainAudio.paused && rainAudio.currentTime > 0;
     var prevVol = rainAudio.volume;
     rainAudio.src = cfg.ambient;
@@ -1820,27 +2220,90 @@ function selectPomoDur(el, minutes){
 }
 
 function enterRoom(){
-  document.getElementById('setup').classList.remove('visible');
+  var setup = document.getElementById('setup');
+  /* Setup 页面退场：缩放+模糊 */
+  setup.classList.add('exit-anim');
   setTimeout(function(){
-    document.getElementById('setup').style.display = 'none';
-  }, 600);
+    setup.classList.remove('visible', 'exit-anim');
+    setup.style.display = 'none';
+  }, 700);
+
   var cfg = sceneConfigs[selectedScene];
   if(cfg){
-    if(cfg.bgMain)document.getElementById('bg-main').style.backgroundImage = "url('" + cfg.bgMain + "')";
-    if(cfg.bgDepth)document.getElementById('bg-depth').style.backgroundImage = "url('" + cfg.bgDepth + "')";
+    if(cfg.bgMain){
+      var bgMain = document.getElementById('bg-main');
+      bgMain.style.backgroundImage = "url('" + cfg.bgMain + "')";
+      bgMain.classList.add('scene-crossfade');
+      setTimeout(function(){ bgMain.classList.remove('scene-crossfade'); }, 1000);
+    }
+    if(cfg.bgDepth){
+      var bgDepth = document.getElementById('bg-depth');
+      bgDepth.style.backgroundImage = "url('" + cfg.bgDepth + "')";
+      bgDepth.classList.add('scene-crossfade');
+      setTimeout(function(){ bgDepth.classList.remove('scene-crossfade'); }, 1000);
+    }
     if(cfg.ambient){
       rainAudio.src = cfg.ambient;
       rainAudio.load();
     }
   }
+
+  /* 房间元素依次入场动画 */
+  document.body.classList.add('room-entering');
+  ['topbar','left-panel','right-panel','bottom-dock'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.style.opacity='0'; el.style.willChange='opacity,transform'; }
+  });
+  /* 用 rAF 确保 DOM 已渲染，再触发动画 */
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      ['topbar','left-panel','right-panel','bottom-dock'].forEach(function(id){
+        var el = document.getElementById(id);
+        if(el) el.style.opacity='';
+      });
+    });
+  });
+  /* 动画结束后清理 class */
+  setTimeout(function(){
+    document.body.classList.remove('room-entering');
+    ['topbar','left-panel','right-panel','bottom-dock'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.style.willChange='';
+    });
+  }, 1800);
+
   rainAudio.play().catch(function(){});
   initLive2DDrag();
   updateClock();setInterval(updateClock,10000);
-  loadTrack(0);
+  scanMusicFolder(); /* 自动扫描 music/ 文件夹 */
+  scanBGMusicFolder(); /* 自动扫描 bg_music/ 文件夹 */
   setBgBlur(document.getElementById('blurSlider').value);
   requestAnimationFrame(animate);
-  if(rainSys)rainSys.toggle(true);
+  if(rainSys) rainSys.toggle(false);
 }
+
+// ═══════════ 全局 UI 缩放系统 ═══════════
+/* 以 1920x1080 为设计基准，通过 zoom 等比缩放所有 UI */
+var UI_BASE_W = 1920, UI_BASE_H = 1080;
+function updateUIScale() {
+  var w = window.innerWidth, h = window.innerHeight;
+  var scale = Math.min(w / UI_BASE_W, h / UI_BASE_H);
+  scale = Math.max(0.45, scale);
+  /* 整体放大系数，可调整 */
+  scale *= 1.3;
+  var wrap = document.getElementById('ui-wrap');
+  if(wrap) wrap.style.zoom = scale;
+  /* 更新调试显示 */
+  var dbg = document.getElementById('scale-debug');
+  if(dbg) {
+    dbg.textContent =
+      'zoom: ' + scale.toFixed(3) +
+      ' | screen: ' + w + 'x' + h +
+      ' | base: ' + UI_BASE_W + 'x' + UI_BASE_H;
+  }
+}
+window.addEventListener('resize', updateUIScale);
+updateUIScale();
 
 // ═══════════ Init ═══════════
 window.addEventListener('DOMContentLoaded', function() {
